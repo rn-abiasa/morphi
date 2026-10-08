@@ -3,10 +3,12 @@ import { createRoot } from "react-dom/client";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import "./index.css";
 
+import Index from "./pages/index";
+
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <h1>Welcome to Morphi!</h1>,
+    element: <Index />,
   },
 ]);
 
