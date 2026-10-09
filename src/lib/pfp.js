@@ -1,3 +1,5 @@
+import { drawDecors } from "./decor";
+
 export const FONTS = [
   {
     id: "rounded",
@@ -157,7 +159,7 @@ export const fontSpec = (font, px) =>
  * Gambar PFP persegi penuh (seperti referensi: gradient + huruf putih di tengah).
  * Dipakai untuk preview (720px) dan download HD (2048px) agar hasilnya identik.
  */
-export function drawPfp(canvas, size, { letter, font, gradient }) {
+export function drawPfp(canvas, size, { letter, font, gradient, decors = [] }) {
   canvas.width = size;
   canvas.height = size;
   const ctx = canvas.getContext("2d");
@@ -176,7 +178,10 @@ export function drawPfp(canvas, size, { letter, font, gradient }) {
   ctx.fillStyle = fill;
   ctx.fillRect(0, 0, size, size);
 
-  if (!letter) return;
+  if (!letter) {
+    drawDecors(ctx, size, decors, size * 0.34);
+    return;
+  }
 
   // Tinggi huruf kapital referensi ≈ 32% lebar kanvas
   const count = Array.from(letter).length;
@@ -191,4 +196,6 @@ export function drawPfp(canvas, size, { letter, font, gradient }) {
 
   ctx.fillStyle = gradient.ink || "#ffffff";
   ctx.fillText(letter, x, y);
+
+  drawDecors(ctx, size, decors, y - m.actualBoundingBoxAscent);
 }

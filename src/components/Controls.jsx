@@ -1,14 +1,17 @@
 import { useState } from "react";
 import { FONTS, GRADIENTS, toCss } from "../lib/pfp";
+import { DECORS } from "../lib/decor";
 import {
   CheckIcon,
+  CloseIcon,
   DownloadIcon,
   FontIcon,
   GradientIcon,
+  SparkleIcon,
   TypeIcon,
 } from "./Icons";
 
-function ToolButton({ label, active, primary, onClick, children }) {
+export function ToolButton({ label, active, primary, compact, onClick, children }) {
   const tone = primary
     ? "bg-ink text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25)] hover:bg-black"
     : active
@@ -21,7 +24,7 @@ function ToolButton({ label, active, primary, onClick, children }) {
       title={label}
       aria-pressed={primary ? undefined : !!active}
       onClick={onClick}
-      className={`grid size-10 place-items-center rounded-full transition duration-200 active:scale-90 ${tone}`}
+      className={`grid ${compact ? "size-9" : "size-10"} place-items-center rounded-full transition duration-200 active:scale-90 ${tone}`}
     >
       {children}
     </button>
@@ -31,11 +34,14 @@ function ToolButton({ label, active, primary, onClick, children }) {
 export default function Controls({
   font,
   gradient,
+  decors,
   letterFocused,
   saved,
   onFocusLetter,
   onFont,
   onGradient,
+  onDecor,
+  onClearDecor,
   onDownload,
 }) {
   const [panel, setPanel] = useState(null);
@@ -71,6 +77,13 @@ export default function Controls({
           onClick={() => toggle("gradient")}
         >
           <GradientIcon />
+        </ToolButton>
+        <ToolButton
+          label="Decor"
+          active={panel === "decor"}
+          onClick={() => toggle("decor")}
+        >
+          <SparkleIcon />
         </ToolButton>
         <ToolButton
           label={saved ? "Saved" : "Download HD"}
@@ -123,6 +136,39 @@ export default function Controls({
                 }`}
               />
             ))}
+          </div>
+        )}
+        {panel === "decor" && (
+          <div className="glass flex max-w-full items-center gap-0.5 overflow-x-auto rounded-full p-1 [scrollbar-width:none]">
+            <button
+              type="button"
+              title="Clear decor"
+              aria-label="Clear decor"
+              disabled={decors.length === 0}
+              onClick={onClearDecor}
+              className="grid size-10 shrink-0 place-items-center rounded-full text-ink/60 transition hover:bg-white/60 active:scale-90 disabled:opacity-30 disabled:hover:bg-transparent"
+            >
+              <CloseIcon />
+            </button>
+            {DECORS.map((d) => {
+              const on = decors.includes(d.id);
+              return (
+                <button
+                  key={d.id}
+                  type="button"
+                  aria-label={`Decor ${d.id}`}
+                  aria-pressed={on}
+                  onClick={() => onDecor(d.id)}
+                  className={`grid size-10 shrink-0 place-items-center rounded-full text-[20px] leading-none transition active:scale-90 ${
+                    on
+                      ? "bg-white/90 shadow-[inset_0_1px_0_#fff,0_1px_4px_rgba(0,0,0,0.15)]"
+                      : "hover:bg-white/50"
+                  }`}
+                >
+                  {d.emoji}
+                </button>
+              );
+            })}
           </div>
         )}
       </div>
