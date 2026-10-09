@@ -10,10 +10,10 @@ import {
 
 function ToolButton({ label, active, primary, onClick, children }) {
   const tone = primary
-    ? "bg-ink text-white hover:bg-black"
+    ? "bg-ink text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25)] hover:bg-black"
     : active
-      ? "bg-black/[0.07] text-ink"
-      : "text-ink/70 hover:bg-black/[0.04] hover:text-ink";
+      ? "bg-white/90 text-ink shadow-[inset_0_1px_0_#fff,0_1px_4px_rgba(0,0,0,0.12)]"
+      : "text-ink/65 hover:bg-white/50 hover:text-ink";
   return (
     <button
       type="button"
@@ -21,7 +21,7 @@ function ToolButton({ label, active, primary, onClick, children }) {
       title={label}
       aria-pressed={primary ? undefined : !!active}
       onClick={onClick}
-      className={`grid size-12 place-items-center rounded-full transition duration-200 active:scale-90 ${tone}`}
+      className={`grid size-10 place-items-center rounded-full transition duration-200 active:scale-90 ${tone}`}
     >
       {children}
     </button>
@@ -42,11 +42,11 @@ export default function Controls({
   const toggle = (id) => setPanel((p) => (p === id ? null : id));
 
   return (
-    <div className="flex w-full max-w-md flex-col items-center gap-3">
+    <div className="flex w-full max-w-sm flex-col items-center gap-3">
       <div
         role="toolbar"
         aria-label="PFP tools"
-        className="flex items-center gap-1 rounded-full bg-white/80 p-1.5 shadow-[0_8px_30px_-12px_rgba(0,0,0,0.25)] ring-1 ring-black/5 backdrop-blur-xl"
+        className="glass flex items-center gap-0.5 rounded-full p-1"
       >
         <ToolButton
           label="Letter"
@@ -82,9 +82,9 @@ export default function Controls({
       </div>
 
       {/* Tinggi tetap supaya layout tidak loncat saat panel dibuka */}
-      <div className="flex h-[84px] w-full justify-center">
+      <div className="flex h-12 w-full justify-center">
         {panel === "font" && (
-          <div className="flex max-w-full items-center gap-2 overflow-x-auto p-2 [scrollbar-width:none]">
+          <div className="glass flex max-w-full items-center gap-1 overflow-x-auto rounded-full p-1 [scrollbar-width:none]">
             {FONTS.map((f) => (
               <button
                 key={f.id}
@@ -94,10 +94,10 @@ export default function Controls({
                 aria-pressed={f.id === font.id}
                 onClick={() => onFont(f)}
                 style={{ fontFamily: f.family, fontWeight: f.weight }}
-                className={`grid size-14 shrink-0 place-items-center rounded-2xl text-[22px] transition active:scale-95 ${
+                className={`grid size-10 shrink-0 place-items-center rounded-full text-[16px] transition active:scale-90 ${
                   f.id === font.id
                     ? "bg-ink text-white"
-                    : "bg-white text-ink ring-1 ring-black/10 hover:ring-black/25"
+                    : "text-ink hover:bg-white/60"
                 }`}
               >
                 Aa
@@ -106,7 +106,7 @@ export default function Controls({
           </div>
         )}
         {panel === "gradient" && (
-          <div className="flex max-w-full items-center gap-3 overflow-x-auto p-3 [scrollbar-width:none]">
+          <div className="glass flex max-w-full items-center gap-2 overflow-x-auto rounded-full p-2 [scrollbar-width:none]">
             {GRADIENTS.map((g) => (
               <button
                 key={g.id}
@@ -116,7 +116,7 @@ export default function Controls({
                 aria-pressed={g.id === gradient.id}
                 onClick={() => onGradient(g)}
                 style={{ backgroundImage: toCss(g) }}
-                className={`size-10 shrink-0 rounded-full ring-1 ring-black/10 transition active:scale-90 ${
+                className={`size-8 shrink-0 rounded-full shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_0_0_0.5px_rgba(0,0,0,0.15)] transition active:scale-90 ${
                   g.id === gradient.id
                     ? "outline-2 outline-offset-2 outline-ink"
                     : ""

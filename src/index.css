@@ -4,7 +4,7 @@
   --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter",
     system-ui, sans-serif;
   --color-ink: #1d1d1f;
-  --color-paper: #fbfbfd;
+  --color-paper: #f5f5f7;
 }
 
 :root {
@@ -22,9 +22,46 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Dot pattern: memudar ke arah tepi layar */
+@utility dots {
+  background-image: radial-gradient(
+    circle at center,
+    rgba(0, 0, 0, 0.2) 1px,
+    transparent 1.4px
+  );
+  background-size: 18px 18px;
+  -webkit-mask-image: radial-gradient(
+    ellipse 75% 65% at 50% 45%,
+    #000 35%,
+    transparent 100%
+  );
+  mask-image: radial-gradient(
+    ellipse 75% 65% at 50% 45%,
+    #000 35%,
+    transparent 100%
+  );
+}
+
+/* Liquid glass: blur + saturasi, highlight tipis di tepi atas, bayangan lembut */
+@utility glass {
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.7),
+    rgba(255, 255, 255, 0.3)
+  );
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  backdrop-filter: blur(16px) saturate(180%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.3),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.4),
+    0 0 0 0.5px rgba(0, 0, 0, 0.08),
+    0 8px 24px -10px rgba(0, 0, 0, 0.25);
+}
+
 :focus-visible {
   outline: 2px solid #0071e3;
-  outline-offset: 3px;
+  outline-offset: 2px;
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -1,6 +1,6 @@
 const base = {
-  width: 22,
-  height: 22,
+  width: 18,
+  height: 18,
   viewBox: "0 0 24 24",
   fill: "none",
   stroke: "currentColor",
@@ -44,7 +44,7 @@ export const CheckIcon = () => (
 );
 
 export const HeartIcon = () => (
-  <svg {...base} width={16} height={16} fill="currentColor" stroke="none">
+  <svg {...base} width={13} height={13} fill="currentColor" stroke="none">
     <path d="M12 21s-8-4.9-8-11.2A4.6 4.6 0 0 1 12 7.1a4.6 4.6 0 0 1 8 2.7C20 16.1 12 21 12 21z" />
   </svg>
 );

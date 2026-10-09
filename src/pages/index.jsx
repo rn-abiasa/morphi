@@ -39,9 +39,10 @@ export default function Index() {
   };
 
   return (
-    <div className="flex min-h-dvh flex-col">
+    <div className="relative flex min-h-dvh flex-col">
+      <div aria-hidden="true" className="dots pointer-events-none fixed inset-0 -z-10" />
       <Navbar />
-      <main className="flex flex-1 flex-col items-center justify-center gap-10 px-5 py-8">
+      <main className="flex flex-1 flex-col items-center justify-center gap-8 px-5 py-6">
         <PfpPreview
           letter={letter}
           font={font}
