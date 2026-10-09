@@ -28,7 +28,7 @@ export default function Index() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `morphi-${letter || "pfp"}.png`;
+      a.download = `morpli-${letter || "pfp"}.png`;
       document.body.appendChild(a);
       a.click();
       a.remove();

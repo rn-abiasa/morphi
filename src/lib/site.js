@@ -1,7 +1,7 @@
 const env = import.meta.env;
 
 // Semua nilai dibaca dari file .env (prefix VITE_ wajib agar terbaca Vite)
-export const APP_NAME = env.VITE_APP_NAME || "Morphi";
+export const APP_NAME = env.VITE_APP_NAME || "Morpli";
 export const COPYRIGHT_OWNER = env.VITE_COPYRIGHT_OWNER || APP_NAME;
 export const SUPPORT_URL = env.VITE_SUPPORT_URL || "";
 
