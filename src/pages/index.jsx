@@ -28,7 +28,7 @@ export default function Index() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `morphi-${letter || "pfp"}.png`;
+      a.download = `morpli-${letter || "pfp"}.png`;
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -40,7 +40,10 @@ export default function Index() {
 
   return (
     <div className="relative flex min-h-dvh flex-col">
-      <div aria-hidden="true" className="dots pointer-events-none fixed inset-0 -z-10" />
+      <div
+        aria-hidden="true"
+        className="dots pointer-events-none fixed inset-0 -z-10"
+      />
       <Navbar />
       <main className="flex flex-1 flex-col items-center justify-center gap-8 px-5 py-6">
         <PfpPreview
