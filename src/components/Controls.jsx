@@ -129,7 +129,7 @@ export default function Controls({
         )}
         {panel === "gradient" && (
           <div className="glass flex max-w-full items-center gap-2 overflow-x-auto rounded-full p-2 [scrollbar-width:none]">
-            {GRADIENTS.map((g) => (
+            {GRADIENTS.map((g, i) => (
               <button
                 key={g.id}
                 type="button"
@@ -139,6 +139,8 @@ export default function Controls({
                 onClick={() => onGradient(g)}
                 style={{ backgroundImage: toCss(g) }}
                 className={`size-8 shrink-0 rounded-full shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_0_0_0.5px_rgba(0,0,0,0.15)] transition active:scale-90 ${
+                  g.ios && !GRADIENTS[i - 1]?.ios ? "ml-3" : ""
+                } ${
                   g.id === gradient.id
                     ? "outline-2 outline-offset-2 outline-ink"
                     : ""

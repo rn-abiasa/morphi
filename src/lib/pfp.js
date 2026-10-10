@@ -52,6 +52,45 @@ export const FONTS = [
   },
 ];
 
+// Set "iOS": warna sistem iOS dengan gradient vertikal halus (terang di atas, pekat di bawah),
+// mirip gaya monogram di Kontak/Pesan. Ini pendekatan saya, bukan salinan aset Apple.
+const lift = (hex, t) => {
+  const n = parseInt(hex.slice(1), 16);
+  const ch = [(n >> 16) & 255, (n >> 8) & 255, n & 255].map((v) =>
+    Math.round(v + (255 - v) * t)
+      .toString(16)
+      .padStart(2, "0"),
+  );
+  return `#${ch.join("")}`;
+};
+
+const IOS_COLORS = [
+  ["Red", "#FF3B30"],
+  ["Orange", "#FF9500"],
+  ["Yellow", "#FFCC00"],
+  ["Green", "#34C759"],
+  ["Mint", "#00C7BE"],
+  ["Teal", "#30B0C7"],
+  ["Cyan", "#32ADE6"],
+  ["Blue", "#007AFF"],
+  ["Indigo", "#5856D6"],
+  ["Purple", "#AF52DE"],
+  ["Pink", "#FF2D55"],
+  ["Brown", "#A2845E"],
+  ["Gray", "#8E8E93"],
+];
+
+const IOS_GRADIENTS = IOS_COLORS.map(([name, color]) => ({
+  id: `ios-${name.toLowerCase()}`,
+  name: `iOS ${name}`,
+  angle: 180,
+  ios: true,
+  stops: [
+    [0, lift(color, 0.28)],
+    [1, color],
+  ],
+}));
+
 // angle mengikuti CSS linear-gradient (180 = atas ke bawah)
 export const GRADIENTS = [
   {
@@ -145,6 +184,7 @@ export const GRADIENTS = [
       [1, "#cfd2d8"],
     ],
   },
+  ...IOS_GRADIENTS,
 ];
 
 export const toCss = (g) =>
