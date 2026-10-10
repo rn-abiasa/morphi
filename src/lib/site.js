@@ -7,9 +7,7 @@ export const SUPPORT_URL = env.VITE_SUPPORT_URL || "";
 
 // Link yang kosong otomatis disembunyikan
 export const SOCIALS = [
-  { label: "GitHub", href: env.VITE_SOCIAL_GITHUB },
   { label: "Instagram", href: env.VITE_SOCIAL_INSTAGRAM },
   { label: "X", href: env.VITE_SOCIAL_X },
   { label: "TikTok", href: env.VITE_SOCIAL_TIKTOK },
-  { label: "LinkedIn", href: env.VITE_SOCIAL_LINKEDIN },
 ].filter((s) => s.href);
