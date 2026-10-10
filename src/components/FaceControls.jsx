@@ -11,6 +11,7 @@ import {
   FrameIcon,
   HairIcon,
   SceneIcon,
+  PropIcon,
   ShirtIcon,
   SkinIcon,
   TuneIcon,
@@ -32,6 +33,10 @@ import {
 const ring =
   "shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_0_0_0.5px_rgba(0,0,0,0.15)]";
 const selected = "outline-2 outline-offset-2 outline-ink";
+
+// Ikon emoji hanya untuk tombol pilihan di UI (hasil gambar memakai SVG sendiri)
+const PROP_ICONS = { mug: "🍵", boba: "🧋", cat: "🐱", plush: "🧸" };
+const FX_ICONS = { sparkle: "✨", hearts: "💗", snow: "❄️", petals: "🌸" };
 
 const Divider = () => (
   <span aria-hidden="true" className="mx-0.5 h-5 w-px shrink-0 bg-black/10" />
@@ -100,7 +105,7 @@ function CustomColor({ label, value, onChange }) {
 
 function Slider({ label, value, min, max, step, onChange }) {
   return (
-    <label className="flex w-[84px] flex-col gap-0.5 text-[10px] font-medium text-ink/50">
+    <label className="flex w-[84px] shrink-0 flex-col gap-0.5 text-[10px] font-medium text-ink/50">
       {label}
       <input
         type="range"
@@ -191,6 +196,15 @@ export default function FaceControls({ face, saved, onChange, onDownload }) {
           onClick={() => toggle("outfit")}
         >
           <ShirtIcon />
+        </ToolButton>
+        <ToolButton
+          compact
+          label={portrait ? "Props & effects" : "Props & effects (Portrait only)"}
+          disabled={!portrait}
+          active={panel === "props"}
+          onClick={() => toggle("props")}
+        >
+          <PropIcon />
         </ToolButton>
         <ToolButton
           compact
@@ -401,7 +415,7 @@ export default function FaceControls({ face, saved, onChange, onDownload }) {
                 }`}
               >
                 <img
-                  src={faceUrl({ ...face, outfit: o }, 96, "44 104 168 168")}
+                  src={faceUrl({ ...face, outfit: o, preview: true }, 96, "44 104 168 168")}
                   alt=""
                   draggable={false}
                   className="size-full"
@@ -426,8 +440,41 @@ export default function FaceControls({ face, saved, onChange, onDownload }) {
           </div>
         )}
 
+        {panel === "props" && portrait && (
+          <div className={row}>
+            {[
+              ["prop", OPTIONS.prop, PROP_ICONS],
+              ["fx", OPTIONS.fx, FX_ICONS],
+            ].map(([key, list, icons], i) => (
+              <div key={key} className="flex items-center gap-1">
+                {i > 0 && <Divider />}
+                {list.map((v) => {
+                  const on = face[key] === v;
+                  return (
+                    <button
+                      key={v}
+                      type="button"
+                      title={`${key} ${v}`}
+                      aria-label={`${key} ${v}`}
+                      aria-pressed={on}
+                      onClick={() => onChange({ [key]: v })}
+                      className={`grid size-9 shrink-0 place-items-center rounded-full text-[18px] leading-none transition active:scale-90 ${
+                        on
+                          ? "bg-white/90 shadow-[inset_0_1px_0_#fff,0_1px_4px_rgba(0,0,0,0.15)]"
+                          : "hover:bg-white/50"
+                      }`}
+                    >
+                      {icons[v] ?? <CloseIcon />}
+                    </button>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
+        )}
+
         {panel === "tune" && (
-          <div className="glass flex items-center gap-4 rounded-full px-5 py-1.5">
+          <div className="glass flex max-w-full items-center gap-4 overflow-x-auto rounded-full px-5 py-1.5 [scrollbar-width:none]">
             <Slider
               label="Spacing"
               min={-1}
@@ -452,6 +499,34 @@ export default function FaceControls({ face, saved, onChange, onDownload }) {
               value={face.eyeSize}
               onChange={(eyeSize) => onChange({ eyeSize })}
             />
+            {portrait && (
+              <>
+                <Slider
+                  label="Round"
+                  min={-1}
+                  max={1}
+                  step={0.01}
+                  value={face.round}
+                  onChange={(round) => onChange({ round })}
+                />
+                <Slider
+                  label="Tilt"
+                  min={-1}
+                  max={1}
+                  step={0.01}
+                  value={face.tilt}
+                  onChange={(tilt) => onChange({ tilt })}
+                />
+                <Slider
+                  label="Shift"
+                  min={-1}
+                  max={1}
+                  step={0.01}
+                  value={face.shift}
+                  onChange={(shift) => onChange({ shift })}
+                />
+              </>
+            )}
           </div>
         )}
       </div>

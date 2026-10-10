@@ -122,6 +122,13 @@ export const SceneIcon = () => (
   </svg>
 );
 
+export const PropIcon = () => (
+  <svg {...base}>
+    <path d="M5 9h11v6a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4z" />
+    <path d="M16 11h1.4a2.4 2.4 0 0 1 0 4.8H16M8.5 3.5v2M12.5 3.5v2" />
+  </svg>
+);
+
 export const ShirtIcon = () => (
   <svg {...base}>
     <path d="M8.5 4 3 6.8l2 4 2.2-1V20h9.6V9.8l2.2 1 2-4L15.5 4a3.6 3.6 0 0 1-7 0z" />

@@ -1,3 +1,15 @@
+import {
+  COZY_BGS,
+  COZY_OUTFITS,
+  cozyBg,
+  cozyDefs,
+  cozyFx,
+  cozyHead,
+  cozyOutfit,
+  cozyProp,
+  foilLayer,
+} from "./cozy";
+
 // ---------- util warna ----------
 const clamp = (n) => Math.max(0, Math.min(255, Math.round(n)));
 const toRgb = (h) => {
@@ -15,7 +27,7 @@ const luma = (h) => {
   const [r, g, b] = toRgb(h);
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 };
-const hsl = (h, s, l) => {
+export const hsl = (h, s, l) => {
   s /= 100;
   l /= 100;
   const k = (n) => (n + h / 30) % 12;
@@ -162,7 +174,10 @@ export const OPTIONS = {
   head: [
     "none", "clip", "band", "beanie", "ears", "bow", "crown",
     "melati", "cunduk", "kamboja", "blangkon", "iket", "peci", "siger", "ahoge",
+    "pompom", "earmuffs", "bearhood",
   ],
+  prop: ["none", "mug", "boba", "cat", "plush"],
+  fx: ["none", "sparkle", "hearts", "snow", "petals"],
 };
 
 export const DEFAULT_FACE = {
@@ -188,6 +203,10 @@ export const DEFAULT_FACE = {
   eyeSize: 1, // 0.8..1.25
   tilt: -0.55, // -1..1  (miringkan kepala, mode Portrait)
   shift: -0.3, // -1..1  (geser kepala kiri/kanan, mode Portrait)
+  prop: "none", // benda kecil di bawah (Portrait)
+  fx: "none", // efek melayang di latar (Portrait)
+  round: 0, // -1..1  (kepala makin bulat/"mochi", Portrait)
+  foil: true, // tampilkan foil untuk tier Epic ke atas
 };
 
 // ---------- bagian-bagian ----------
@@ -275,7 +294,7 @@ function headwear(type, accent, hairColor) {
     ahoge: `<path d="M122 8C112 -26 146 -54 198 -40C176 -33 160 -20 156 8Z" fill="${hairColor}" stroke="${hairColor}" stroke-width="4" stroke-linejoin="round"/>`,
     crown: `<path d="M78 56L90 16L110 40L128 8L146 40L166 16L178 56Z" fill="#ffd24a" stroke="#e0a800" stroke-width="5" stroke-linejoin="round"/><circle cx="128" cy="40" r="5" fill="${accent}"/>`,
   };
-  return parts[type] || "";
+  return parts[type] ?? cozyHead(type, accent) ?? "";
 }
 
 function marks(type, color) {
@@ -291,7 +310,7 @@ function marks(type, color) {
 }
 
 // ---------- latar ----------
-export const BACKGROUNDS = ["sky", "sunset", "night", "sawah", "batik", "blossom", "solid"];
+export const BACKGROUNDS = ["sky", "sunset", "night", "sawah", "batik", "blossom", "solid", ...COZY_BGS];
 
 const cloud = (x, y, k) =>
   `<g transform="translate(${x} ${y}) scale(${k})" fill="#fff"><ellipse rx="26" ry="11"/><ellipse cx="-14" cy="-8" rx="14" ry="11"/><ellipse cx="8" cy="-12" rx="17" ry="13"/></g>`;
@@ -335,6 +354,7 @@ export function bgLayer(id, color = "#cfe3ff") {
       return `<rect width="256" height="256" fill="${color}"/>`;
     default:
       return (
+        cozyBg(id) ||
         grad([[0, "#4aa8ff"], [1, "#d6efff"]]) +
         cloud(60, 70, 1) + cloud(206, 48, 0.8) + cloud(196, 150, 1.1) + cloud(34, 168, 0.7)
       );
@@ -342,7 +362,7 @@ export function bgLayer(id, color = "#cfe3ff") {
 }
 
 // ---------- baju (gaya disederhanakan, terinspirasi busana daerah) ----------
-export const OUTFITS = ["tee", "hoodie", "batik", "koko", "beskap", "pangsi", "solo", "sunda", "bali"];
+export const OUTFITS = ["tee", "hoodie", "batik", "koko", "beskap", "pangsi", "solo", "sunda", "bali", ...COZY_OUTFITS];
 export const OUTFIT_COLORS = ["#ffffff", "#f4c7d3", "#b79cf0", "#7aa7ff", "#4fbf93", "#e8c27a", "#b03a48", "#1f2430"];
 
 const GOLD = "#e0b44a";
@@ -392,19 +412,24 @@ function outfitLayer(id, p, skin) {
       fill() +
       `<path d="M104 182L128 220L152 182Z" fill="${skin}"/><path d="M104 182L128 220L152 182" fill="none" stroke="#f1c453" stroke-width="3.5" stroke-linejoin="round"/><path d="M160 186L196 196L84 264L48 254Z" fill="#f5c542"/><path d="M172 194L70 258" stroke="#fff3c4" stroke-width="2.5" stroke-dasharray="4 5" opacity="0.85"/><path d="M160 186L48 254" stroke="#d99f1c" stroke-width="2"/>`,
   };
-  return (lines[id] || lines.tee)();
+  if (lines[id]) return lines[id]();
+  return cozyOutfit(id, p, skin) || lines.tee();
 }
 
 function outfitDefs(p) {
   const lt = mix(p, "#ffffff", 0.4);
   return `<pattern id="prP" width="22" height="22" patternUnits="userSpaceOnUse" patternTransform="rotate(-40)"><rect width="22" height="22" fill="#5b3a1e"/><path d="M0 6Q5.5 0 11 6T22 6" stroke="#e8c98d" stroke-width="2.4" fill="none"/><path d="M0 17Q5.5 11 11 17T22 17" stroke="#e8c98d" stroke-width="2.4" fill="none"/></pattern>
 <pattern id="bsP" width="20" height="20" patternUnits="userSpaceOnUse"><rect width="20" height="20" fill="${p}"/><g fill="none" stroke="${lt}" stroke-width="1.6"><circle cx="10" cy="0" r="7"/><circle cx="10" cy="20" r="7"/><circle cx="0" cy="10" r="7"/><circle cx="20" cy="10" r="7"/></g><circle cx="10" cy="10" r="1.8" fill="${lt}"/></pattern>
-<pattern id="lcP" width="14" height="14" patternUnits="userSpaceOnUse"><g fill="none" stroke="${lt}" stroke-width="1.2" opacity="0.9"><circle cx="3.5" cy="3.5" r="2"/><circle cx="10.5" cy="10.5" r="2"/><path d="M7 0V3M0 7H3M14 7H11M7 14V11"/></g></pattern>`;
+<pattern id="lcP" width="14" height="14" patternUnits="userSpaceOnUse"><g fill="none" stroke="${lt}" stroke-width="1.2" opacity="0.9"><circle cx="3.5" cy="3.5" r="2"/><circle cx="10.5" cy="10.5" r="2"/><path d="M7 0V3M0 7H3M14 7H11M7 14V11"/></g></pattern>${cozyDefs(p)}`;
 }
 
 // ---------- render ----------
-const HEAD_PATH =
-  "M88 0H168A88 88 0 0 1 256 88V146A110 110 0 0 1 146 256H110A110 110 0 0 1 0 146V88A88 88 0 0 1 88 0Z";
+// Bentuk kepala; `round` (-1..1) mengatur seberapa bulat/"mochi"
+const headPath = (round = 0) => {
+  const t = 88 + round * 30;
+  const b = 110 + round * 18;
+  return `M${t} 0H${256 - t}A${t} ${t} 0 0 1 256 ${t}V${256 - b}A${b} ${b} 0 0 1 ${256 - b} 256H${b}A${b} ${b} 0 0 1 0 ${256 - b}V${t}A${t} ${t} 0 0 1 ${t} 0Z`;
+};
 const BODY_PATH =
   "M14 256Q20 206 80 192Q104 186 128 196Q152 186 176 192Q236 206 242 256Z";
 const SCALE = 0.74; // ukuran kepala di mode Portrait (besar, baju hanya mengintip)
@@ -436,7 +461,7 @@ export function faceSvg(input, size = 256, view = "0 0 256 256") {
 
   const blush =
     c.blush === "soft"
-      ? `<ellipse cx="52" cy="214" rx="27" ry="17" fill="${blushC}"/><ellipse cx="204" cy="214" rx="27" ry="17" fill="${blushC}"/>`
+      ? `<ellipse cx="52" cy="214" rx="32" ry="21" fill="url(#bl)"/><ellipse cx="204" cy="214" rx="32" ry="21" fill="url(#bl)"/>`
       : c.blush === "lines"
         ? (() => {
             const l = `<path d="M34 214l8-12M48 216l8-12M62 218l8-12"/>`;
@@ -457,7 +482,8 @@ ${c.streak ? `<path d="M100 0H136L114 150H92Z" fill="${c.streak}"/>` : ""}
     : "";
 
   const wear = headwear(c.head, c.accent, c.hairColor);
-  const wearClipped = c.head === "band" || c.head === "beanie";
+  const wearClipped = ["band", "beanie", "pompom", "bearhood"].includes(c.head);
+  const wearTop = headwear(`${c.head}_top`, c.accent, c.hairColor);
   const hairExtra = hair.extra ? hair.extra(c.hairColor, hairShade) : "";
   const glassesStr = glasses(c.glasses, lx, rx, cy, gs, c.accent);
 
@@ -470,11 +496,11 @@ ${eye(lx)}${eye(rx)}
 ${mouth(c.mouth, mouthC)}
 ${hairLayer}
 ${wearClipped ? wear : ""}`;
-  const free = `${hairExtra}${wearClipped ? "" : wear}${glassesStr}`;
+  const free = `${hairExtra}${wearClipped ? "" : wear}${wearTop}${glassesStr}`;
 
-  const defs = `<defs>${hair.d ? `<clipPath id="hc"><path d="${hair.d}"/></clipPath>` : ""}${
+  const defs = `<defs><radialGradient id="bl"><stop offset="0" stop-color="${blushC}"/><stop offset="0.6" stop-color="${blushC}" stop-opacity="0.85"/><stop offset="1" stop-color="${blushC}" stop-opacity="0"/></radialGradient>${hair.d ? `<clipPath id="hc"><path d="${hair.d}"/></clipPath>` : ""}${
     portrait
-      ? `<clipPath id="hd"><path d="${HEAD_PATH}"/></clipPath><clipPath id="bd"><path d="${BODY_PATH}"/></clipPath>${outfitDefs(c.outfitColor)}`
+      ? `<clipPath id="hd"><path d="${headPath(c.round)}"/></clipPath><clipPath id="bd"><path d="${BODY_PATH}"/></clipPath>${outfitDefs(c.outfitColor)}`
       : ""
   }</defs>`;
 
@@ -488,7 +514,7 @@ ${wearClipped ? wear : ""}`;
   const bodyDx = hcx - 128 * S * Math.sin((angle * Math.PI) / 180) - 128;
 
   const body = portrait
-    ? `${bgLayer(c.bg, c.bgColor)}
+    ? `${bgLayer(c.bg, c.bgColor)}${cozyFx(c.fx)}
 <g transform="translate(${bodyDx.toFixed(1)} ${bodyDy})">
 <rect x="108" y="150" width="40" height="60" fill="${c.skin}"/>
 <ellipse cx="128" cy="196" rx="36" ry="11" fill="${skinShade}"/>
@@ -497,15 +523,16 @@ ${wearClipped ? wear : ""}`;
 </g>
 <g transform="translate(${hcx.toFixed(1)} ${headCy}) rotate(${angle.toFixed(1)}) scale(${S}) translate(-128 -128)">
 <ellipse cx="2" cy="150" rx="15" ry="21" fill="${c.skin}"/><ellipse cx="254" cy="150" rx="15" ry="21" fill="${c.skin}"/>
-<path d="${HEAD_PATH}" fill="${c.skin}"/>
+<path d="${headPath(c.round)}" fill="${c.skin}"/>
 <g clip-path="url(#hd)">${inner}</g>
 ${free}
-</g>`
+</g>
+${cozyProp(c.prop, c.accent)}`
     : `<rect width="256" height="256" fill="${c.skin}"/>
 ${inner}
 ${free}`;
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${view}" width="${size}" height="${size}">${defs}${body}</svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${view}" width="${size}" height="${size}">${defs}${body}${size >= 256 ? foilLayer(c.tier) : ""}</svg>`;
 }
 
 // ---------- ID unik & acak ----------
@@ -514,7 +541,7 @@ export function faceId(cfg) {
   const s = JSON.stringify([
     c.skin, c.eyes, c.hair, c.hairColor, c.streak, c.brows, c.mouth, c.blush,
     c.marks, c.glasses, c.head, c.accent,
-    c.frame === "portrait" ? [c.bg, c.bgColor, c.outfit, c.outfitColor, +c.tilt.toFixed(2), +c.shift.toFixed(2)] : 0,
+    c.frame === "portrait" ? [c.bg, c.bgColor, c.outfit, c.outfitColor, +c.tilt.toFixed(2), +c.shift.toFixed(2), c.prop, c.fx, +c.round.toFixed(2)] : 0,
     +c.spacing.toFixed(2), +c.eyeY.toFixed(2), +c.eyeSize.toFixed(2),
   ]);
   let h = 2166136261;
@@ -529,7 +556,7 @@ const pick = (a) => a[Math.floor(Math.random() * a.length)];
 const rand = (a, b) => a + Math.random() * (b - a);
 const maybe = (p, fn) => (Math.random() < p ? fn() : null);
 
-export function randomFace() {
+export function randomFaceUniform() {
   return {
     skin: pick(SKINS),
     eyes: pick(EYES).id,

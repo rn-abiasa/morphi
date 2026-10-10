@@ -9,7 +9,8 @@ import FacePreview from "../components/FacePreview";
 import FaceControls from "../components/FaceControls";
 import { FONTS, GRADIENTS, drawPfp, fontSpec } from "../lib/pfp";
 import { toggleDecor } from "../lib/decor";
-import { DEFAULT_FACE, randomFace, renderFaceCanvas } from "../lib/face";
+import { DEFAULT_FACE, renderFaceCanvas } from "../lib/face";
+import { randomFace, rarityInfo } from "../lib/rarity";
 import { DiceIcon } from "../components/Icons";
 
 const HD_SIZE = 2048;
@@ -33,7 +34,12 @@ export default function Index() {
   const download = async () => {
     let canvas;
     if (mode === "face") {
-      canvas = await renderFaceCanvas(face, HD_SIZE);
+      const info = rarityInfo(face);
+      const foilTier =
+        (info.tier === "epic" || info.tier === "legendary") && face.foil !== false
+          ? info.tier
+          : null;
+      canvas = await renderFaceCanvas({ ...face, tier: foilTier }, HD_SIZE);
     } else {
       try {
         await document.fonts.load(fontSpec(font, 100), letter || "A");
@@ -75,7 +81,11 @@ export default function Index() {
               aria-label="Shuffle face"
               title="Shuffle"
               onClick={() =>
-                setFace((f) => ({ ...randomFace(), frame: f.frame }))
+                setFace((f) => ({
+                  ...DEFAULT_FACE,
+                  ...randomFace(Math.random, f.frame),
+                  foil: f.foil,
+                }))
               }
               className="glass grid size-8 place-items-center rounded-full text-ink/70 transition hover:text-ink active:scale-90"
             >
@@ -111,7 +121,12 @@ export default function Index() {
           </>
         ) : (
           <>
-            <FacePreview face={face} />
+            <FacePreview
+              face={face}
+              onToggleFoil={() =>
+                setFace((f) => ({ ...f, foil: f.foil === false }))
+              }
+            />
             <FaceControls
               face={face}
               saved={saved}
