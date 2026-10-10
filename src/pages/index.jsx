@@ -1,3 +1,4 @@
+import { Analytics } from "@vercel/analytics/react";
 import { useRef, useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -73,7 +74,9 @@ export default function Index() {
               type="button"
               aria-label="Shuffle face"
               title="Shuffle"
-              onClick={() => setFace(randomFace())}
+              onClick={() =>
+                setFace((f) => ({ ...randomFace(), frame: f.frame }))
+              }
               className="glass grid size-8 place-items-center rounded-full text-ink/70 transition hover:text-ink active:scale-90"
             >
               <DiceIcon />
@@ -119,6 +122,7 @@ export default function Index() {
         )}
       </main>
       <Footer />
+      <Analytics />
     </div>
   );
 }

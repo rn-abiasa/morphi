@@ -8,17 +8,24 @@ import {
   DropIcon,
   EyeIcon,
   GlassesIcon,
+  FrameIcon,
   HairIcon,
+  SceneIcon,
+  ShirtIcon,
   SkinIcon,
   TuneIcon,
 } from "./Icons";
 import {
   ACCENTS,
+  BACKGROUNDS,
   EYES,
   HAIRS,
   HAIR_COLORS,
   OPTIONS,
+  OUTFITS,
+  OUTFIT_COLORS,
   SKINS,
+  bgUrl,
   faceUrl,
 } from "../lib/face";
 
@@ -111,6 +118,7 @@ function Slider({ label, value, min, max, step, onChange }) {
 export default function FaceControls({ face, saved, onChange, onDownload }) {
   const [panel, setPanel] = useState(null);
   const toggle = (id) => setPanel((p) => (p === id ? null : id));
+  const portrait = face.frame === "portrait";
   const row =
     "glass flex max-w-full items-center gap-2 overflow-x-auto rounded-full p-2 [scrollbar-width:none]";
 
@@ -151,6 +159,39 @@ export default function FaceControls({ face, saved, onChange, onDownload }) {
             <Icon />
           </ToolButton>
         ))}
+      </div>
+
+      <div
+        role="toolbar"
+        aria-label="Scene tools"
+        className="glass flex items-center gap-0.5 rounded-full p-1"
+      >
+        <ToolButton
+          compact
+          label="Frame"
+          active={panel === "frame"}
+          onClick={() => toggle("frame")}
+        >
+          <FrameIcon />
+        </ToolButton>
+        <ToolButton
+          compact
+          label={portrait ? "Background" : "Background (Portrait only)"}
+          disabled={!portrait}
+          active={panel === "bg"}
+          onClick={() => toggle("bg")}
+        >
+          <SceneIcon />
+        </ToolButton>
+        <ToolButton
+          compact
+          label={portrait ? "Outfit" : "Outfit (Portrait only)"}
+          disabled={!portrait}
+          active={panel === "outfit"}
+          onClick={() => toggle("outfit")}
+        >
+          <ShirtIcon />
+        </ToolButton>
         <ToolButton
           compact
           primary
@@ -287,6 +328,100 @@ export default function FaceControls({ face, saved, onChange, onDownload }) {
               label="Custom accent color"
               value={face.accent}
               onChange={(accent) => onChange({ accent })}
+            />
+          </div>
+        )}
+
+        {panel === "frame" && (
+          <div className={row}>
+            {[
+              ["closeup", "Close-up"],
+              ["portrait", "Portrait"],
+            ].map(([id, label]) => (
+              <button
+                key={id}
+                type="button"
+                aria-pressed={face.frame === id}
+                onClick={() => onChange({ frame: id })}
+                className={`h-8 shrink-0 rounded-full px-4 text-[12px] font-medium transition active:scale-95 ${
+                  face.frame === id
+                    ? "bg-ink text-white"
+                    : "text-ink/70 hover:bg-white/60"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {panel === "bg" && portrait && (
+          <div className={row}>
+            {BACKGROUNDS.map((b) => (
+              <button
+                key={b}
+                type="button"
+                title={b}
+                aria-label={`Background ${b}`}
+                aria-pressed={face.bg === b}
+                onClick={() => onChange({ bg: b })}
+                className={`size-9 shrink-0 overflow-hidden rounded-full transition active:scale-90 ${ring} ${
+                  face.bg === b ? selected : ""
+                }`}
+              >
+                <img
+                  src={bgUrl(b, face.bgColor)}
+                  alt=""
+                  draggable={false}
+                  className="size-full"
+                />
+              </button>
+            ))}
+            <Divider />
+            <CustomColor
+              label="Custom background color"
+              value={face.bgColor}
+              onChange={(bgColor) => onChange({ bgColor, bg: "solid" })}
+            />
+          </div>
+        )}
+
+        {panel === "outfit" && portrait && (
+          <div className={row}>
+            {OUTFITS.map((o) => (
+              <button
+                key={o}
+                type="button"
+                title={o}
+                aria-label={`Outfit ${o}`}
+                aria-pressed={face.outfit === o}
+                onClick={() => onChange({ outfit: o })}
+                className={`size-9 shrink-0 overflow-hidden rounded-full bg-white/70 transition active:scale-90 ${ring} ${
+                  face.outfit === o ? selected : ""
+                }`}
+              >
+                <img
+                  src={faceUrl({ ...face, outfit: o }, 96, "44 104 168 168")}
+                  alt=""
+                  draggable={false}
+                  className="size-full"
+                />
+              </button>
+            ))}
+            <Divider />
+            {OUTFIT_COLORS.map((c) => (
+              <Swatch
+                key={c}
+                color={c}
+                label={`Outfit color ${c}`}
+                active={face.outfitColor === c}
+                onClick={() => onChange({ outfitColor: c })}
+              />
+            ))}
+            <CustomColor
+              label="Custom outfit color"
+              value={face.outfitColor}
+              onChange={(outfitColor) => onChange({ outfitColor })}
             />
           </div>
         )}

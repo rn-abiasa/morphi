@@ -106,6 +106,28 @@ export const DiceIcon = () => (
   </svg>
 );
 
+export const FrameIcon = () => (
+  <svg {...base}>
+    <path d="M4 9V6a2 2 0 0 1 2-2h3M15 4h3a2 2 0 0 1 2 2v3M20 15v3a2 2 0 0 1-2 2h-3M9 20H6a2 2 0 0 1-2-2v-3" />
+    <circle cx="12" cy="11" r="2.6" />
+    <path d="M7.5 17c.8-2 2.5-3 4.5-3s3.7 1 4.5 3" />
+  </svg>
+);
+
+export const SceneIcon = () => (
+  <svg {...base}>
+    <rect x="4" y="5" width="16" height="14" rx="3" />
+    <circle cx="9" cy="10" r="1.6" />
+    <path d="m5 17 4.5-4.5 3 3 2.5-2.5 4 4" />
+  </svg>
+);
+
+export const ShirtIcon = () => (
+  <svg {...base}>
+    <path d="M8.5 4 3 6.8l2 4 2.2-1V20h9.6V9.8l2.2 1 2-4L15.5 4a3.6 3.6 0 0 1-7 0z" />
+  </svg>
+);
+
 export const CloseIcon = () => (
   <svg {...base}>
     <path d="M6 6l12 12M18 6 6 18" />

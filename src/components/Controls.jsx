@@ -11,7 +11,15 @@ import {
   TypeIcon,
 } from "./Icons";
 
-export function ToolButton({ label, active, primary, compact, onClick, children }) {
+export function ToolButton({
+  label,
+  active,
+  primary,
+  compact,
+  disabled,
+  onClick,
+  children,
+}) {
   const tone = primary
     ? "bg-ink text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25)] hover:bg-black"
     : active
@@ -24,7 +32,8 @@ export function ToolButton({ label, active, primary, compact, onClick, children 
       title={label}
       aria-pressed={primary ? undefined : !!active}
       onClick={onClick}
-      className={`grid ${compact ? "size-9" : "size-10"} place-items-center rounded-full transition duration-200 active:scale-90 ${tone}`}
+      disabled={disabled}
+      className={`grid ${compact ? "size-9" : "size-10"} place-items-center rounded-full transition duration-200 active:scale-90 disabled:pointer-events-none disabled:opacity-30 ${tone}`}
     >
       {children}
     </button>
