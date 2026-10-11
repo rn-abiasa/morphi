@@ -9,7 +9,7 @@ import FacePreview from "../components/FacePreview";
 import FaceControls from "../components/FaceControls";
 import { FONTS, GRADIENTS, drawPfp, fontSpec } from "../lib/pfp";
 import { toggleDecor } from "../lib/decor";
-import { DEFAULT_FACE, renderFaceCanvas } from "../lib/face";
+import { DEFAULT_FACE, faceId, hashId, renderFaceCanvas } from "../lib/face";
 import { randomFace, rarityInfo } from "../lib/rarity";
 import { DiceIcon } from "../components/Icons";
 
@@ -33,6 +33,7 @@ export default function Index() {
 
   const download = async () => {
     let canvas;
+    let name;
     if (mode === "face") {
       const info = rarityInfo(face);
       const foilTier =
@@ -40,6 +41,9 @@ export default function Index() {
           ? info.tier
           : null;
       canvas = await renderFaceCanvas({ ...face, tier: foilTier }, HD_SIZE);
+      // contoh: morpli-face-A3F9C2 atau morpli-face-A3F9C2-epic (tier ikut dicantumkan jika Rare ke atas)
+      const rare = ["rare", "epic", "legendary"].includes(info.tier);
+      name = `morpli-face-${faceId(face)}${rare ? `-${info.tier}` : ""}`;
     } else {
       try {
         await document.fonts.load(fontSpec(font, 100), letter || "A");
@@ -48,6 +52,8 @@ export default function Index() {
       }
       canvas = document.createElement("canvas");
       drawPfp(canvas, HD_SIZE, { letter, font, gradient, decors });
+      const safe = (letter || "").replace(/[^\p{L}\p{N}]/gu, "") || "pfp";
+      name = `morpli-letter-${safe}-${hashId([letter, font.id, gradient.id, decors])}`;
     }
 
     canvas.toBlob((blob) => {
@@ -55,7 +61,7 @@ export default function Index() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `morpli-${mode === "face" ? "face" : letter || "pfp"}.png`;
+      a.download = `${name}.png`;
       document.body.appendChild(a);
       a.click();
       a.remove();

@@ -526,7 +526,7 @@ ${wearClipped ? wear : ""}`;
 
   const skinLight = mix(c.skin, "#fff6ea", 0.22);
   const skinEdge = mix(c.skin, "#b0584f", 0.1);
-  const polish = `<radialGradient id="sk" cx="0.5" cy="0.45" r="0.7"><stop offset="0" stop-color="${skinLight}"/><stop offset="0.65" stop-color="${c.skin}"/><stop offset="1" stop-color="${skinEdge}"/></radialGradient><filter id="sb" x="-10%" y="-10%" width="120%" height="130%"><feGaussianBlur stdDeviation="3.5"/></filter><radialGradient id="vg" cx="0.5" cy="0.5" r="0.75"><stop offset="0.6" stop-color="#2a1020" stop-opacity="0"/><stop offset="1" stop-color="#2a1020" stop-opacity="0.16"/></radialGradient><linearGradient id="bsh" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a1020" stop-opacity="0"/><stop offset="1" stop-color="#2a1020" stop-opacity="0.22"/></linearGradient><filter id="gr" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="7"/><feColorMatrix type="matrix" values="0 0 0 0 0.25  0 0 0 0 0.15  0 0 0 0 0.17  1.7 0 0 0 -0.72"/></filter>`;
+  const polish = `<radialGradient id="sk" cx="0.5" cy="0.45" r="0.7"><stop offset="0" stop-color="${skinLight}"/><stop offset="0.65" stop-color="${c.skin}"/><stop offset="1" stop-color="${skinEdge}"/></radialGradient><filter id="sb" x="-10%" y="-10%" width="120%" height="130%"><feGaussianBlur stdDeviation="3.5"/></filter><radialGradient id="vg" cx="0.5" cy="0.5" r="0.75"><stop offset="0.6" stop-color="#2a1020" stop-opacity="0"/><stop offset="1" stop-color="#2a1020" stop-opacity="0.16"/></radialGradient><linearGradient id="bsh" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a1020" stop-opacity="0"/><stop offset="1" stop-color="#2a1020" stop-opacity="0.22"/></linearGradient><filter id="gr" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="7"/><feColorMatrix type="matrix" values="0 0 0 0 0.25  0 0 0 0 0.15  0 0 0 0 0.17  1.4 0 0 0 -0.62"/></filter>`;
   const defs = `<defs>${polish}<radialGradient id="bl"><stop offset="0" stop-color="${blushC}"/><stop offset="0.6" stop-color="${blushC}" stop-opacity="0.85"/><stop offset="1" stop-color="${blushC}" stop-opacity="0"/></radialGradient>${hair.d ? `<clipPath id="hc"><path d="${hair.d}"/></clipPath>` : ""}${
     portrait
       ? `<clipPath id="hd"><path d="${headPath(c.round)}"/></clipPath><clipPath id="bd"><path d="${BODY_PATH}"/></clipPath>${outfitDefs(c.outfitColor)}`
@@ -561,7 +561,7 @@ ${cozyProp(c.prop, c.accent)}`
 ${inner}
 ${free}`;
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${view}" width="${size}" height="${size}">${defs}${body}<rect width="256" height="256" fill="url(#vg)"/>${c.grain !== false && size >= 256 ? '<rect width="256" height="256" filter="url(#gr)" opacity="0.4"/>' : ""}${size >= 256 ? foilLayer(c.tier) : ""}</svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${view}" width="${size}" height="${size}">${defs}${body}<rect width="256" height="256" fill="url(#vg)"/>${c.grain !== false && size >= 256 ? '<rect width="256" height="256" filter="url(#gr)" opacity="0.2"/>' : ""}${size >= 256 ? foilLayer(c.tier) : ""}</svg>`;
 }
 
 // ---------- ID unik & acak ----------

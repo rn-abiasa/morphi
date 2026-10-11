@@ -320,6 +320,21 @@ export default function FaceControls({ face, saved, onChange, onDownload }) {
             {chips("blush")}
             <Divider />
             {chips("marks")}
+            <Divider />
+            {chips("shine")}
+            <Divider />
+            <button
+              type="button"
+              aria-pressed={face.grain !== false}
+              onClick={() => onChange({ grain: face.grain === false })}
+              className={`h-8 shrink-0 rounded-full px-3 text-[12px] font-medium transition active:scale-95 ${
+                face.grain !== false
+                  ? "bg-ink text-white"
+                  : "text-ink/70 hover:bg-white/60"
+              }`}
+            >
+              Grain
+            </button>
           </div>
         )}
 
