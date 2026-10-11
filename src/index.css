@@ -59,6 +59,33 @@ body {
     0 8px 24px -10px rgba(0, 0, 0, 0.25);
 }
 
+/* Kursor kustom: dua SVG kecil lewat CSS, tanpa JavaScript, jadi tetap ringan.
+   Panah gelap berbingkai putih dengan kilau pink; saat di atas tombol berubah jadi bulatan pink berkilau. */
+:root {
+  --cursor-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M5 3.5V18.5L8.9 15L11.6 20.6L14.2 19.4L11.6 13.9L16.6 13.6Z' fill='%23241a22' stroke='%23fff' stroke-width='1.8' stroke-linejoin='round'/%3E%3Cpath d='M19 3L19.9 5.1L22 6L19.9 6.9L19 9L18.1 6.9L16 6L18.1 5.1Z' fill='%23ff8fb0'/%3E%3C/svg%3E")
+    5 4, default;
+  --cursor-pointer: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Ccircle cx='14' cy='14' r='10' fill='%23241a22' fill-opacity='.14'/%3E%3Ccircle cx='14' cy='14' r='7.6' fill='%23ff8fb0' stroke='%23fff' stroke-width='2.2'/%3E%3Cpath d='M14 9.6L15 13L18.4 14L15 15L14 18.4L13 15L9.6 14L13 13Z' fill='%23fff'/%3E%3C/svg%3E")
+    14 14, pointer;
+}
+
+html {
+  cursor: var(--cursor-arrow);
+}
+
+a,
+button:not(:disabled),
+[role="tab"],
+label,
+select,
+input[type="range"],
+input[type="color"] {
+  cursor: var(--cursor-pointer);
+}
+
+button:disabled {
+  cursor: var(--cursor-arrow);
+}
+
 :focus-visible {
   outline: 2px solid #0071e3;
   outline-offset: 2px;

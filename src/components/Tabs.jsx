@@ -7,7 +7,7 @@ export default function Tabs({ mode, onChange }) {
     <div
       role="tablist"
       aria-label="Avatar type"
-      className="glass inline-flex rounded-full p-0.5"
+      className="glass relative z-10 inline-flex rounded-full p-1"
     >
       {items.map((t) => {
         const active = mode === t.id;
@@ -18,7 +18,7 @@ export default function Tabs({ mode, onChange }) {
             role="tab"
             aria-selected={active}
             onClick={() => onChange(t.id)}
-            className={`h-7 rounded-full px-4 text-[12px] font-medium transition duration-200 ${
+            className={`h-8 min-w-[72px] rounded-full px-5 text-[13px] font-medium transition duration-200 ${
               active
                 ? "bg-ink text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25)]"
                 : "text-ink/60 hover:text-ink"
