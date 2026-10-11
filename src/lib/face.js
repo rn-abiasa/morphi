@@ -48,7 +48,7 @@ export const ACCENTS = [
   "#b48cff", "#ff8a5c", "#1d1c1d", "#ffffff",
 ];
 
-const INK = "#1d1c1d";
+const INK = "#241a22"; // hitam hangat keunguan, bukan hitam murni
 // cermin horizontal untuk bagian kanan
 const mir = (s) => `<g transform="matrix(-1 0 0 1 256 0)">${s}</g>`;
 const A = (frag) => frag + mir(frag);
@@ -178,6 +178,7 @@ export const OPTIONS = {
   ],
   prop: ["none", "mug", "boba", "cat", "plush"],
   fx: ["none", "sparkle", "hearts", "snow", "petals"],
+  shine: ["none", "dot", "sparkle"],
 };
 
 export const DEFAULT_FACE = {
@@ -207,9 +208,30 @@ export const DEFAULT_FACE = {
   fx: "none", // efek melayang di latar (Portrait)
   round: 0, // -1..1  (kepala makin bulat/"mochi", Portrait)
   foil: true, // tampilkan foil untuk tier Epic ke atas
+  shine: "sparkle", // kilau di mata: none | dot | sparkle
+  grain: true, // butiran film halus (khas Morpli)
 };
 
 // ---------- bagian-bagian ----------
+function eyeShine(id, mode) {
+  const pos = { pill: [-3, -18, 1], oval: [-4, -14, 0.9], dot: [-3, -3, 0.6] }[id];
+  if (!pos || mode === "none") return "";
+  const [x, y, k] = pos;
+  const second = id !== "dot";
+  if (mode === "dot") {
+    return (
+      `<circle cx="${x}" cy="${y}" r="${5 * k}" fill="#fff" opacity="0.95"/>` +
+      (second ? `<circle cx="${-x + 2}" cy="${-y - 1}" r="2.6" fill="#fff" opacity="0.8"/>` : "")
+    );
+  }
+  // kilau bintang bersudut empat = tanda khas Morpli
+  const star = "M0-8L2.4-2.4 8 0 2.4 2.4 0 8-2.4 2.4-8 0-2.4-2.4Z";
+  return (
+    `<path d="${star}" transform="translate(${x} ${y}) scale(${k})" fill="#fff"/>` +
+    (second ? `<path d="${star}" transform="translate(${-x + 2} ${-y - 1}) scale(0.38)" fill="#fff" opacity="0.9"/>` : "")
+  );
+}
+
 function brows(type, x, y, color, flip) {
   const w = `stroke="${color}" stroke-width="7" stroke-linecap="round" fill="none"`;
   const shapes = {
@@ -449,14 +471,16 @@ export function faceSvg(input, size = 256, view = "0 0 256 256") {
   const gs = Math.max(1, k * 0.95);
 
   // Semua warna turunan dihitung dari warna dasar pilihan pengguna
-  const skinShade = mix(c.skin, "#8a4b2b", 0.16);
+  const skinShade = mix(c.skin, "#b0584f", 0.2); // bayangan kulit condong rose
   const blushC = mix(c.skin, "#ff7a86", 0.3);
   const blushDark = mix(c.skin, "#e0525f", 0.45);
   const mouthC = mix(c.skin, "#2b1010", 0.72);
   const marksC = mix(c.skin, "#7a4b2b", 0.42);
   const dark = luma(c.hairColor) < 70;
-  const hairShade = dark ? mix(c.hairColor, "#ffffff", 0.12) : mix(c.hairColor, "#1c1830", 0.14);
-  const hairShine = mix(c.hairColor, "#ffffff", dark ? 0.22 : 0.5);
+  // bayangan rambut condong indigo, sorot krem hangat
+  const hairShade = dark ? mix(c.hairColor, "#8a7aa8", 0.16) : mix(c.hairColor, "#2a2145", 0.2);
+  const hairShine = mix(c.hairColor, "#fff4e0", dark ? 0.24 : 0.5);
+  const hairInk = mix(c.hairColor, "#1a1230", 0.4);
   const browC = mix(c.hairColor, "#1c1830", 0.5);
 
   const blush =
@@ -469,7 +493,8 @@ export function faceSvg(input, size = 256, view = "0 0 256 256") {
           })()
         : "";
 
-  const eye = (x) => `<g transform="translate(${x} ${cy}) scale(${k})">${eyes.draw()}</g>`;
+  const eye = (x) =>
+    `<g transform="translate(${x} ${cy}) scale(${k})">${eyes.draw()}${eyeShine(c.eyes, c.shine)}</g>`;
   const browY = cy - 44 * k - 6;
 
   const hairLayer = hair.d
@@ -477,6 +502,7 @@ export function faceSvg(input, size = 256, view = "0 0 256 256") {
 <g clip-path="url(#hc)">
 <g fill="${hairShade}">${hair.shade}</g>
 <g fill="${hairShine}" opacity="0.55">${hair.shine}</g>
+<path d="${hair.d}" fill="none" stroke="${hairInk}" stroke-width="5" stroke-linejoin="round" opacity="0.5"/>
 ${c.streak ? `<path d="M100 0H136L114 150H92Z" fill="${c.streak}"/>` : ""}
 </g>`
     : "";
@@ -488,7 +514,7 @@ ${c.streak ? `<path d="M100 0H136L114 150H92Z" fill="${c.streak}"/>` : ""}
   const glassesStr = glasses(c.glasses, lx, rx, cy, gs, c.accent);
 
   // lapisan wajah (koordinat lokal 256x256)
-  const inner = `${hair.d ? `<path d="${hair.d}" transform="translate(0 12)" fill="${skinShade}"/>` : ""}
+  const inner = `${portrait ? `<path d="${headPath(c.round)}" fill="none" stroke="${skinShade}" stroke-width="8" opacity="0.45"/>` : ""}${hair.d ? `<path d="${hair.d}" transform="translate(0 12)" fill="${skinShade}" filter="url(#sb)" opacity="0.9"/>` : ""}
 ${blush}
 ${marks(c.marks, marksC)}
 ${brows(c.brows, lx, browY, browC, false)}${brows(c.brows, rx, browY, browC, true)}
@@ -498,7 +524,10 @@ ${hairLayer}
 ${wearClipped ? wear : ""}`;
   const free = `${hairExtra}${wearClipped ? "" : wear}${wearTop}${glassesStr}`;
 
-  const defs = `<defs><radialGradient id="bl"><stop offset="0" stop-color="${blushC}"/><stop offset="0.6" stop-color="${blushC}" stop-opacity="0.85"/><stop offset="1" stop-color="${blushC}" stop-opacity="0"/></radialGradient>${hair.d ? `<clipPath id="hc"><path d="${hair.d}"/></clipPath>` : ""}${
+  const skinLight = mix(c.skin, "#fff6ea", 0.22);
+  const skinEdge = mix(c.skin, "#b0584f", 0.1);
+  const polish = `<radialGradient id="sk" cx="0.5" cy="0.45" r="0.7"><stop offset="0" stop-color="${skinLight}"/><stop offset="0.65" stop-color="${c.skin}"/><stop offset="1" stop-color="${skinEdge}"/></radialGradient><filter id="sb" x="-10%" y="-10%" width="120%" height="130%"><feGaussianBlur stdDeviation="3.5"/></filter><radialGradient id="vg" cx="0.5" cy="0.5" r="0.75"><stop offset="0.6" stop-color="#2a1020" stop-opacity="0"/><stop offset="1" stop-color="#2a1020" stop-opacity="0.16"/></radialGradient><linearGradient id="bsh" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a1020" stop-opacity="0"/><stop offset="1" stop-color="#2a1020" stop-opacity="0.22"/></linearGradient><filter id="gr" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="7"/><feColorMatrix type="matrix" values="0 0 0 0 0.25  0 0 0 0 0.15  0 0 0 0 0.17  1.7 0 0 0 -0.72"/></filter>`;
+  const defs = `<defs>${polish}<radialGradient id="bl"><stop offset="0" stop-color="${blushC}"/><stop offset="0.6" stop-color="${blushC}" stop-opacity="0.85"/><stop offset="1" stop-color="${blushC}" stop-opacity="0"/></radialGradient>${hair.d ? `<clipPath id="hc"><path d="${hair.d}"/></clipPath>` : ""}${
     portrait
       ? `<clipPath id="hd"><path d="${headPath(c.round)}"/></clipPath><clipPath id="bd"><path d="${BODY_PATH}"/></clipPath>${outfitDefs(c.outfitColor)}`
       : ""
@@ -519,20 +548,20 @@ ${wearClipped ? wear : ""}`;
 <rect x="108" y="150" width="40" height="60" fill="${c.skin}"/>
 <ellipse cx="128" cy="196" rx="36" ry="11" fill="${skinShade}"/>
 <path d="${BODY_PATH}" fill="${c.skin}"/>
-<g clip-path="url(#bd)">${outfitLayer(c.outfit, c.outfitColor, c.skin)}</g>
+<g clip-path="url(#bd)">${outfitLayer(c.outfit, c.outfitColor, c.skin)}<rect y="170" width="256" height="110" fill="url(#bsh)"/></g>
 </g>
 <g transform="translate(${hcx.toFixed(1)} ${headCy}) rotate(${angle.toFixed(1)}) scale(${S}) translate(-128 -128)">
 <ellipse cx="2" cy="150" rx="15" ry="21" fill="${c.skin}"/><ellipse cx="254" cy="150" rx="15" ry="21" fill="${c.skin}"/>
-<path d="${headPath(c.round)}" fill="${c.skin}"/>
+<path d="${headPath(c.round)}" fill="url(#sk)"/>
 <g clip-path="url(#hd)">${inner}</g>
 ${free}
 </g>
 ${cozyProp(c.prop, c.accent)}`
-    : `<rect width="256" height="256" fill="${c.skin}"/>
+    : `<rect width="256" height="256" fill="url(#sk)"/>
 ${inner}
 ${free}`;
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${view}" width="${size}" height="${size}">${defs}${body}${size >= 256 ? foilLayer(c.tier) : ""}</svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${view}" width="${size}" height="${size}">${defs}${body}<rect width="256" height="256" fill="url(#vg)"/>${c.grain !== false && size >= 256 ? '<rect width="256" height="256" filter="url(#gr)" opacity="0.4"/>' : ""}${size >= 256 ? foilLayer(c.tier) : ""}</svg>`;
 }
 
 // ---------- ID unik & acak ----------
@@ -540,10 +569,21 @@ export function faceId(cfg) {
   const c = { ...DEFAULT_FACE, ...cfg };
   const s = JSON.stringify([
     c.skin, c.eyes, c.hair, c.hairColor, c.streak, c.brows, c.mouth, c.blush,
-    c.marks, c.glasses, c.head, c.accent,
+    c.marks, c.glasses, c.head, c.accent, c.shine,
     c.frame === "portrait" ? [c.bg, c.bgColor, c.outfit, c.outfitColor, +c.tilt.toFixed(2), +c.shift.toFixed(2), c.prop, c.fx, +c.round.toFixed(2)] : 0,
     +c.spacing.toFixed(2), +c.eyeY.toFixed(2), +c.eyeSize.toFixed(2),
   ]);
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return (h >>> 0).toString(16).toUpperCase().padStart(8, "0").slice(0, 6);
+}
+
+// Kode pendek 6 karakter dari data apa pun (untuk nama file dan ID)
+export function hashId(value) {
+  const s = JSON.stringify(value);
   let h = 2166136261;
   for (let i = 0; i < s.length; i++) {
     h ^= s.charCodeAt(i);
