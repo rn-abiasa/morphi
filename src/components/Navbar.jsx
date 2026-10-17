@@ -1,19 +1,16 @@
-import { APP_NAME, SUPPORT_URL } from "../lib/site";
+import { SUPPORT_URL } from "../lib/site";
 import { HeartIcon } from "./Icons";
 
 export default function Navbar() {
   return (
     <header className="sticky top-0 z-10 px-4 pt-[max(0.75rem,env(safe-area-inset-top))]">
       <nav className="glass mx-auto flex h-11 max-w-md items-center justify-between rounded-full pl-4 pr-1.5">
-        <div className="flex justify-start items-center gap-2">
-          <img src="/favicon.svg" className="h-6 rounded-md" />
-          <a
-            href="/"
-            className="text-[16px] font-semibold tracking-[-0.03em] text-ink"
-          >
+        <a href="/" className="flex items-center gap-2">
+          <img src="/favicon.svg" alt="" className="h-6 rounded-md" />
+          <span className="text-[16px] font-semibold tracking-[-0.03em] text-ink">
             Morpli
-          </a>
-        </div>
+          </span>
+        </a>
         {SUPPORT_URL && (
           <a
             href={SUPPORT_URL}

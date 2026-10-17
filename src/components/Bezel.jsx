@@ -1,4 +1,4 @@
-// Bingkai kaca berbentuk lingkaran + cahaya warna di belakangnya (dipakai tab Letter dan Face)
+// Bingkai kaca berbentuk lingkaran + cahaya warna di belakangnya
 export default function Bezel({ glow, children }) {
   return (
     <div className="relative w-[min(56vw,232px)] sm:w-[248px]">
