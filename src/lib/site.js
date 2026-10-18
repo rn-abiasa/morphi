@@ -4,6 +4,7 @@ const env = import.meta.env;
 export const APP_NAME = env.VITE_APP_NAME || "Morpli";
 export const COPYRIGHT_OWNER = env.VITE_COPYRIGHT_OWNER || APP_NAME;
 export const SUPPORT_URL = env.VITE_SUPPORT_URL || "";
+export const TIKTOK_URL = env.VITE_SOCIAL_TIKTOK || "";
 
 // Link yang kosong otomatis disembunyikan
 export const SOCIALS = [

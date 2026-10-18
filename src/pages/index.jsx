@@ -3,6 +3,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import PfpPreview from "../components/PfpPreview";
 import Controls from "../components/Controls";
+import SupportDialog from "../components/SupportDialog";
 import { FONTS, GRADIENTS, drawPfp, fontSpec } from "../lib/pfp";
 import { toggleDecor } from "../lib/decor";
 import { HD_SIZE, hashId, saveCanvas } from "../lib/save";
@@ -14,6 +15,7 @@ export default function Index() {
   const [decors, setDecors] = useState([]);
   const [focused, setFocused] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [supportOpen, setSupportOpen] = useState(false);
   const inputRef = useRef(null);
 
   const download = async () => {
@@ -32,6 +34,8 @@ export default function Index() {
     );
     setSaved(true);
     setTimeout(() => setSaved(false), 1600);
+    // beri jeda agar konfirmasi "Saved" terlihat dulu sebelum dialog muncul
+    setTimeout(() => setSupportOpen(true), 600);
   };
 
   return (
@@ -67,6 +71,10 @@ export default function Index() {
         />
       </main>
       <Footer />
+      <SupportDialog
+        open={supportOpen}
+        onClose={() => setSupportOpen(false)}
+      />
     </div>
   );
 }
