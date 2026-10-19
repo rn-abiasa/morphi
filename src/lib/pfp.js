@@ -9,6 +9,14 @@ export const FONTS = [
     scale: 1,
   },
   {
+    id: "soft",
+    name: "Soft Heavy",
+    family: '"M PLUS Rounded 1c", "Arial Rounded MT Bold", system-ui, sans-serif',
+    weight: 800,
+    scale: 1,
+    cap: 0.386, // tinggi huruf kapital = 38,6% lebar kanvas, seperti gambar referensi
+  },
+  {
     id: "sans",
     name: "Sans",
     family: '"Manrope", system-ui, sans-serif',
@@ -100,6 +108,16 @@ export const GRADIENTS = [
     stops: [
       [0, "#706e6e"],
       [1, "#1e1e1e"],
+    ],
+  },
+  {
+    id: "ash",
+    name: "Ash",
+    angle: 180,
+    // diukur dari gambar referensi: abu terang di atas, abu gelap hangat di bawah
+    stops: [
+      [0, "#b8b8b8"],
+      [1, "#343231"],
     ],
   },
   {
@@ -225,7 +243,14 @@ export function drawPfp(canvas, size, { letter, font, gradient, decors = [] }) {
 
   // Tinggi huruf kapital referensi ≈ 32% lebar kanvas
   const count = Array.from(letter).length;
-  const px = size * (count === 1 ? 0.46 : 0.34) * font.scale;
+  let px = size * (count === 1 ? 0.46 : 0.34) * font.scale;
+  if (font.cap) {
+    // Font dengan `cap`: ukuran dihitung dari tinggi huruf kapital sebenarnya ("H" pada 100px),
+    // sehingga tinggi huruf tepat sama untuk font apa pun.
+    ctx.font = fontSpec(font, 100);
+    const capAt100 = ctx.measureText("H").actualBoundingBoxAscent || 72;
+    px = (size * font.cap * (count === 1 ? 1 : 0.74) * 100) / capAt100;
+  }
   ctx.font = fontSpec(font, px);
   ctx.textAlign = "left";
   ctx.textBaseline = "alphabetic";

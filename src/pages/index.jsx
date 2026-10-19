@@ -32,6 +32,17 @@ export default function Index() {
       canvas,
       `morpli-letter-${safe}-${hashId([letter, font.id, gradient.id, decors])}`,
     );
+    // notifikasi ke Discord (fire-and-forget, gagal pun tidak mengganggu unduhan)
+    fetch("/api/notify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        letter,
+        font: font.id,
+        gradient: gradient.id,
+      }),
+      keepalive: true,
+    }).catch(() => {});
     setSaved(true);
     setTimeout(() => setSaved(false), 1600);
     // beri jeda agar konfirmasi "Saved" terlihat dulu sebelum dialog muncul
