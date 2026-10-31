@@ -1,54 +1,107 @@
-// Vercel serverless function: kirim notifikasi ke Discord saat PFP diunduh.
-// URL webhook disimpan di env server (DISCORD_WEBHOOK_URL), tidak pernah masuk bundle browser.
+/* global process */
 
-const clean = (v, max = 40) =>
-  String(v ?? "")
-    .replace(/[^\p{L}\p{N} _.-]/gu, "")
+// Fungsi serverless Vercel: meneruskan notifikasi unduhan ke Discord.
+// URL webhook hanya ada di server (DISCORD_WEBHOOK_URL) dan tidak pernah dikirim ke browser.
+
+// Pembatas kasar per alamat IP (berlaku per instans fungsi). Untuk perlindungan yang lebih kuat,
+// aktifkan Vercel Firewall atau gunakan penyimpanan bersama seperti Upstash.
+const hits = new Map();
+const LIMIT = 20; // maksimal permintaan per jendela
+const WINDOW_MS = 60_000;
+
+function limited(ip) {
+  const now = Date.now();
+  if (hits.size > 500) {
+    for (const [key, v] of hits) if (v.reset < now) hits.delete(key);
+  }
+  const entry = hits.get(ip);
+  if (!entry || entry.reset < now) {
+    hits.set(ip, { count: 1, reset: now + WINDOW_MS });
+    return false;
+  }
+  entry.count += 1;
+  return entry.count > LIMIT;
+}
+
+// Bersihkan teks dari pengguna: buang karakter kontrol dan simbol markdown/mention, lalu potong
+const clean = (value, max = 40) =>
+  String(value ?? "")
+    .replace(/[\u0000-\u001f`*_~|>\\[\]()@#]/g, "")
+    .trim()
     .slice(0, max) || "-";
 
 export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    res.setHeader("Allow", "POST");
-    return res.status(405).json({ ok: false });
+  if (req.method !== "POST") return res.status(405).end();
+
+  const webhook = process.env.DISCORD_WEBHOOK_URL;
+  if (!webhook) return res.status(204).end(); // belum dikonfigurasi: abaikan diam-diam
+
+  // Hanya terima permintaan dari situs ini sendiri (atau localhost saat pengembangan)
+  const origin = req.headers.origin || "";
+  let originHost = "";
+  try {
+    originHost = new URL(origin).host;
+  } catch {
+    /* origin tidak valid */
+  }
+  const isLocal = /^(localhost|127\.0\.0\.1)(:\d+)?$/.test(originHost);
+  if (!originHost || (originHost !== req.headers.host && !isLocal)) {
+    return res.status(403).end();
   }
 
-  const url = process.env.DISCORD_WEBHOOK_URL;
-  if (!url) return res.status(500).json({ ok: false, error: "not configured" });
+  const ip =
+    String(req.headers["x-forwarded-for"] || "").split(",")[0].trim() || "unknown";
+  if (limited(ip)) return res.status(429).end();
 
-  const body = typeof req.body === "string" ? safeParse(req.body) : req.body;
-  const { letter, font, gradient } = body || {};
+  let body = req.body;
+  if (typeof body === "string") {
+    try {
+      body = JSON.parse(body);
+    } catch {
+      body = {};
+    }
+  }
+  body = body && typeof body === "object" ? body : {};
+
+  const country = clean(req.headers["x-vercel-ip-country"], 4);
+  const device = /mobile|android|iphone|ipad/i.test(req.headers["user-agent"] || "")
+    ? "Mobile"
+    : "Desktop";
+  const decors = Math.max(0, Math.min(Number(body.decors) || 0, 3));
+  const nth = Math.max(0, Math.min(Number(body.nth) || 0, 99999));
+
+  const payload = {
+    username: "Morpli",
+    allowed_mentions: { parse: [] }, // pastikan tidak ada @everyone atau ping dari isi kiriman
+    embeds: [
+      {
+        title: "New PFP downloaded",
+        color: 0xff8fb0,
+        fields: [
+          { name: "Letter", value: clean(body.letter, 4), inline: true },
+          { name: "Font", value: clean(body.font), inline: true },
+          { name: "Background", value: clean(body.gradient), inline: true },
+          { name: "Decor", value: String(decors), inline: true },
+          {
+            name: "Visitor",
+            value: `${clean(body.visitor, 12)} · #${nth}`,
+            inline: true,
+          },
+          { name: "From", value: `${country} · ${device}`, inline: true },
+        ],
+        timestamp: new Date().toISOString(),
+      },
+    ],
+  };
 
   try {
-    const r = await fetch(url, {
+    const response = await fetch(webhook, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        username: "Morpli",
-        allowed_mentions: { parse: [] },
-        embeds: [
-          {
-            title: "PFP baru diunduh",
-            color: 0x5865f2,
-            fields: [
-              { name: "Huruf", value: clean(letter, 4), inline: true },
-              { name: "Font", value: clean(font), inline: true },
-              { name: "Gradient", value: clean(gradient), inline: true },
-            ],
-            timestamp: new Date().toISOString(),
-          },
-        ],
-      }),
+      body: JSON.stringify(payload),
     });
-    return res.status(r.ok ? 200 : 502).json({ ok: r.ok });
+    return res.status(response.ok ? 204 : 502).end();
   } catch {
-    return res.status(502).json({ ok: false });
-  }
-}
-
-function safeParse(s) {
-  try {
-    return JSON.parse(s);
-  } catch {
-    return null;
+    return res.status(502).end();
   }
 }
