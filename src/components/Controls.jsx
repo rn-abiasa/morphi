@@ -10,6 +10,7 @@ import {
   SparkleIcon,
   TypeIcon,
 } from "./Icons";
+import PromoBanner from "./PromoBanner";
 
 export function ToolButton({
   label,
@@ -183,6 +184,8 @@ export default function Controls({
           </div>
         )}
       </div>
+
+      <PromoBanner />
     </div>
   );
 }

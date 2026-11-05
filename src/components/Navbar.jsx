@@ -6,9 +6,8 @@ export default function Navbar() {
     <header className="sticky top-0 z-10 px-4 pt-[max(0.75rem,env(safe-area-inset-top))]">
       <nav className="glass mx-auto flex h-11 max-w-md items-center justify-between rounded-full pl-4 pr-1.5">
         <a href="/" className="flex items-center gap-2">
-          <img src="/favicon.svg" alt="" className="h-6 rounded-md" />
           <span className="text-[16px] font-semibold tracking-[-0.03em] text-ink">
-            Morpli
+            Morpli PFP
           </span>
         </a>
         {SUPPORT_URL && (
