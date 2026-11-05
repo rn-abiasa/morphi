@@ -105,7 +105,7 @@ export default function Controls({
       </div>
 
       {/* Tinggi tetap supaya layout tidak loncat saat panel dibuka */}
-      <div className="flex h-12 w-full justify-center">
+      <div className="flex h-12 w-full justify-center mb-5">
         {panel === "font" && (
           <div className="glass flex max-w-full items-center gap-1 overflow-x-auto rounded-full p-1 [scrollbar-width:none]">
             {FONTS.map((f) => (
