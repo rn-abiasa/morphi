@@ -52,7 +52,7 @@ export default function PfpPreview({
         value={letter}
         onChange={(e) =>
           onLetterChange(
-            Array.from(e.target.value.toUpperCase()).slice(0, 2).join(""),
+            Array.from(e.target.value).slice(0, 2).join(""),
           )
         }
         onFocus={(e) => {
@@ -61,7 +61,7 @@ export default function PfpPreview({
         }}
         onBlur={() => onFocusChange(false)}
         aria-label="Initial letter"
-        autoCapitalize="characters"
+        autoCapitalize="off"
         autoComplete="off"
         spellCheck={false}
         enterKeyHint="done"
