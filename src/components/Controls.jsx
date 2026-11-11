@@ -27,7 +27,7 @@ export function ToolButton({
   const tone = primary
     ? "bg-ink text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25)] hover:bg-black dark:bg-surface dark:text-white dark:hover:bg-white/10"
     : active
-      ? "bg-white/90 text-ink shadow-[inset_0_1px_0_#fff,0_1px_4px_rgba(0,0,0,0.12)] dark:bg-white/10 dark:shadow-[inset_0_1px_0_#fff,0_1px_4px_rgba(255,255,255,0.05)]"
+      ? "bg-black/90 text-ink shadow-[inset_0_1px_0_#fff,0_1px_4px_rgba(0,0,0,0.12)] dark:bg-white/10 dark:shadow-[inset_0_1px_0_#fff,0_1px_4px_rgba(255,255,255,0.05)]"
       : "text-ink/65 hover:bg-white/50 hover:text-ink dark:hover:bg-white/10";
   return (
     <button
@@ -37,7 +37,7 @@ export function ToolButton({
       aria-pressed={primary ? undefined : !!active}
       onClick={onClick}
       disabled={disabled}
-      className={`grid ${compact ? "size-9" : "size-10"} place-items-center rounded-full transition duration-200 active:scale-90 disabled:pointer-events-none disabled:opacity-30 ${tone}`}
+      className={`grid ${compact ? "size-9" : "size-10"} place-items-center rounded-full transition duration-200 active:scale-90 disabled:pointer-events-none disabled:opacity-30`}
     >
       {children}
     </button>
@@ -109,10 +109,7 @@ export default function Controls({
         >
           {saved ? <CheckIcon /> : <DownloadIcon />}
         </ToolButton>
-        <ToolButton
-          label="Tema"
-          onClick={toggleTheme}
-        >
+        <ToolButton label="Tema" onClick={toggleTheme}>
           <ThemeIcon />
         </ToolButton>
       </div>
