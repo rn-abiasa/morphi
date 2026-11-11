@@ -65,7 +65,7 @@ export default function PromoBanner() {
       {/* Scrim gelap di sisi teks agar tetap terbaca di foto apa pun */}
       <div
         aria-hidden="true"
-        className="absolute inset-0 -z-10 bg-linear-to-r from-black/70 via-black/35 to-transparent"
+        className="absolute inset-0 -z-10 bg-linear-to-r from-black/70 dark:from-black/90 via-black/35 dark:via-black/60 to-transparent"
       />
       <div className="flex h-full items-center justify-between gap-3 pl-4 pr-3.5 text-white">
         <div className="min-w-0">

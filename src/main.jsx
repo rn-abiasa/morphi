@@ -5,6 +5,16 @@ import "./index.css";
 
 import Index from "./pages/index";
 
+// Inisialisasi tema sebelum React render untuk mencegah flash warna awal
+const THEME_KEY = "morpli-theme";
+const stored = localStorage.getItem(THEME_KEY);
+const isDark =
+  stored === "dark" ||
+  (!stored && window.matchMedia("(prefers-color-scheme: dark)").matches);
+if (isDark) {
+  document.documentElement.classList.add("dark");
+}
+
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <Index />

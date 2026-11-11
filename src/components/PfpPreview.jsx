@@ -65,7 +65,7 @@ export default function PfpPreview({
         autoComplete="off"
         spellCheck={false}
         enterKeyHint="done"
-        className="absolute inset-0 size-full cursor-text bg-transparent text-center text-transparent outline-none selection:bg-white/25"
+        className="absolute inset-0 size-full cursor-text bg-transparent text-center text-transparent outline-none selection:bg-white/25 dark:selection:bg-white/15"
         style={{
           fontFamily: font.family,
           fontWeight: font.weight,

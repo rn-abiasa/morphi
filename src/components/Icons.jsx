@@ -62,6 +62,19 @@ export const ChevronIcon = () => (
   </svg>
 );
 
+export const MoonIcon = () => (
+  <svg {...base}>
+    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+  </svg>
+);
+
+export const SunIcon = () => (
+  <svg {...base}>
+    <circle cx="12" cy="12" r="5" />
+    <path d="M12 3v1m0 16v1m9-9h1M4 12h1m4.93-4.93l.71.71m11.78-11.78-.71.71M12 12.79l.71.71M12 12.79l-.71-.71M12 12.79l.71-.71M12 12.79l-.71.71" />
+  </svg>
+);
+
 export const HeartIcon = () => (
   <svg {...base} width={13} height={13} fill="currentColor" stroke="none">
     <path d="M12 21s-8-4.9-8-11.2A4.6 4.6 0 0 1 12 7.1a4.6 4.6 0 0 1 8 2.7C20 16.1 12 21 12 21z" />

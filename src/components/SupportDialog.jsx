@@ -25,9 +25,9 @@ export default function SupportDialog({ open, onClose }) {
       onClick={(e) => {
         if (e.target === ref.current) onClose(); // klik di area gelap
       }}
-      className="m-auto w-[min(88vw,340px)] rounded-[28px] border-0 bg-transparent p-0 text-ink backdrop:bg-black/30 backdrop:backdrop-blur-sm"
+      className="m-auto w-[min(88vw,340px)] rounded-[28px] border-0 bg-transparent p-0 text-ink backdrop:bg-black/30 dark:backdrop:bg-black/60 backdrop:backdrop-blur-sm"
     >
-      <div className="rounded-[28px] bg-paper p-6 text-center shadow-[0_24px_60px_-20px_rgba(0,0,0,0.45)] ring-1 ring-black/5">
+      <div className="rounded-[28px] bg-paper dark:bg-surface p-6 text-center shadow-[0_24px_60px_-20px_rgba(0,0,0,0.45)] ring-1 ring-black/5 dark:ring-white/10">
         <h2
           id="support-title"
           className="text-[20px] font-semibold tracking-[-0.02em] text-ink"
@@ -40,7 +40,7 @@ export default function SupportDialog({ open, onClose }) {
           target="_blank"
           rel="noreferrer"
           onClick={onClose}
-          className="mt-5 flex h-12 items-center justify-center rounded-full bg-ink text-[15px] font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25),0_8px_24px_-8px_rgba(0,0,0,0.5)] transition hover:bg-black active:scale-[0.98]"
+          className="mt-5 flex h-12 items-center justify-center rounded-full bg-ink text-[15px] font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25),0_8px_24px_-8px_rgba(0,0,0,0.5)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.15),0_8px_24px_-8px_rgba(0,0,0,0.7)] transition hover:bg-black dark:hover:bg-white/20 active:scale-[0.98]"
         >
           Open TikTok
         </a>
@@ -48,7 +48,7 @@ export default function SupportDialog({ open, onClose }) {
         <button
           type="button"
           onClick={onClose}
-          className="mt-1.5 h-10 w-full rounded-full text-[13px] font-medium text-ink/55 transition hover:text-ink"
+          className="mt-1.5 h-10 w-full rounded-full text-[13px] font-medium text-ink/55 dark:text-ink/70 transition hover:text-ink"
         >
           Not now
         </button>
