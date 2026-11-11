@@ -62,7 +62,7 @@ export default function Controls({
       <div
         role="toolbar"
         aria-label="PFP tools"
-        className="glass flex items-center gap-0.5 rounded-full p-1"
+        className="bg-gray-50 border border-gray-200 flex items-center gap-0.5 rounded-full p-1"
       >
         <ToolButton
           label="Letter"
@@ -107,7 +107,7 @@ export default function Controls({
       {/* Tinggi tetap supaya layout tidak loncat saat panel dibuka */}
       <div className="flex h-12 w-full justify-center mb-5">
         {panel === "font" && (
-          <div className="glass flex max-w-full items-center gap-1 overflow-x-auto rounded-full p-1 [scrollbar-width:none]">
+          <div className="bg-gray-50 border border-gray-200 flex max-w-full items-center gap-1 overflow-x-auto rounded-full p-1 [scrollbar-width:none]">
             {FONTS.map((f) => (
               <button
                 key={f.id}
@@ -129,7 +129,7 @@ export default function Controls({
           </div>
         )}
         {panel === "gradient" && (
-          <div className="glass flex max-w-full items-center gap-2 overflow-x-auto rounded-full p-2 [scrollbar-width:none]">
+          <div className="bg-gray-50 border border-gray-200 flex max-w-full items-center gap-2 overflow-x-auto rounded-full p-2 [scrollbar-width:none]">
             {GRADIENTS.map((g, i) => (
               <button
                 key={g.id}
@@ -151,7 +151,7 @@ export default function Controls({
           </div>
         )}
         {panel === "decor" && (
-          <div className="glass flex max-w-full items-center gap-0.5 overflow-x-auto rounded-full p-1 [scrollbar-width:none]">
+          <div className="bg-gray-50 border border-gray-200 flex max-w-full items-center gap-0.5 overflow-x-auto rounded-full p-1 [scrollbar-width:none]">
             <button
               type="button"
               title="Clear decor"

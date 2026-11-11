@@ -11,7 +11,8 @@ export const FONTS = [
   {
     id: "soft",
     name: "Soft Heavy",
-    family: '"M PLUS Rounded 1c", "Arial Rounded MT Bold", system-ui, sans-serif',
+    family:
+      '"M PLUS Rounded 1c", "Arial Rounded MT Bold", system-ui, sans-serif',
     weight: 800,
     scale: 1,
     cap: 0.386, // tinggi huruf kapital = 38,6% lebar kanvas, seperti gambar referensi
@@ -202,7 +203,6 @@ export const GRADIENTS = [
       [1, "#cfd2d8"],
     ],
   },
-  ...IOS_GRADIENTS,
 ];
 
 export const toCss = (g) =>
@@ -210,8 +210,7 @@ export const toCss = (g) =>
     .map(([pos, color]) => `${color} ${pos * 100}%`)
     .join(", ")})`;
 
-export const fontSpec = (font, px) =>
-  `${font.weight} ${px}px ${font.family}`;
+export const fontSpec = (font, px) => `${font.weight} ${px}px ${font.family}`;
 
 /**
  * Gambar PFP persegi penuh (seperti referensi: gradient + huruf putih di tengah).
@@ -257,7 +256,8 @@ export function drawPfp(canvas, size, { letter, font, gradient, decors = [] }) {
 
   const m = ctx.measureText(letter);
   const x = size / 2 - (m.actualBoundingBoxRight - m.actualBoundingBoxLeft) / 2;
-  const y = size / 2 + (m.actualBoundingBoxAscent - m.actualBoundingBoxDescent) / 2;
+  const y =
+    size / 2 + (m.actualBoundingBoxAscent - m.actualBoundingBoxDescent) / 2;
 
   ctx.fillStyle = gradient.ink || "#ffffff";
   ctx.fillText(letter, x, y);

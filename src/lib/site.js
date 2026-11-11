@@ -18,7 +18,7 @@ export const TIKTOK_URL = "https://tiktok.com/@_abiasa";
 // Disarankan 720x152 px (rasio ~4.7:1); sisi kiri foto sebaiknya tidak terlalu ramai
 // karena teks ada di situ.
 export const PROMO = {
-  url: "https://www.tiktok.com/@morpvely",
+  url: "",
   images: [mvg01, mvg02],
   interval: 4500,
   title: "Birthday Website for You ✨",
