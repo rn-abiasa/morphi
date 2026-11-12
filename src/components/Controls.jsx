@@ -225,8 +225,8 @@ export default function Controls({
             </div>
             <div className="flex items-end gap-4">
               {[
-                ["amount", "Lengkung"],
-                ["weight", "Tebal"],
+                ["amount", "Amount"],
+                ["weight", "Weight"],
               ].map(([key, label]) => (
                 <label
                   key={key}
