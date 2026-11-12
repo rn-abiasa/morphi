@@ -1,5 +1,5 @@
 // Ukuran unduhan HD, penyimpan canvas ke PNG, dan kode pendek untuk nama file
-export const HD_SIZE = 2048;
+export const HD_SIZE = 4028;
 
 // Simpan canvas sebagai PNG; promise selesai setelah unduhan dipicu
 export const saveCanvas = (canvas, name) =>

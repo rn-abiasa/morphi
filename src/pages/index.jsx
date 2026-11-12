@@ -82,10 +82,7 @@ export default function Index() {
         />
       </main>
       <Footer />
-      <SupportDialog
-        open={supportOpen}
-        onClose={() => setSupportOpen(false)}
-      />
+      <SupportDialog open={supportOpen} onClose={() => setSupportOpen(false)} />
     </div>
   );
 }

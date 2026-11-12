@@ -40,7 +40,7 @@ export default function SupportDialog({ open, onClose }) {
           target="_blank"
           rel="noreferrer"
           onClick={onClose}
-          className="mt-5 flex h-12 items-center justify-center rounded-full bg-ink text-[15px] font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25),0_8px_24px_-8px_rgba(0,0,0,0.5)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.15),0_8px_24px_-8px_rgba(0,0,0,0.7)] transition hover:bg-black dark:hover:bg-white/20 active:scale-[0.98]"
+          className="mt-5 flex h-12 items-center justify-center rounded-full bg-ink text-[15px] font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25),0_8px_24px_-8px_rgba(0,0,0,0.5)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.15),0_8px_24px_-8px_rgba(0,0,0,0.7)] transition hover:bg-black dark:hover:bg-white/20 dark:text-black dark:hover:text-white active:scale-[0.98]"
         >
           Open TikTok
         </a>
