@@ -44,7 +44,7 @@ export default function PromoBanner() {
       onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}
       onBlur={() => setPaused(false)}
-      className="group relative isolate block h-[76px] w-full overflow-hidden rounded-[20px] shadow-[0_0_0_0.5px_rgba(0,0,0,0.1),0_8px_24px_-12px_rgba(0,0,0,0.35)] transition active:scale-[0.985]"
+      className="group relative isolate block h-[76px] w-52 mt-10 overflow-hidden rounded-[20px] shadow-[0_0_0_0.5px_rgba(0,0,0,0.1),0_8px_24px_-12px_rgba(0,0,0,0.35)] transition active:scale-[0.985]"
     >
       {/* Semua foto ditumpuk; hanya yang aktif opacity-nya 1, sisanya memudar */}
       <div

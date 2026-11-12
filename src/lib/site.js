@@ -2,7 +2,7 @@
 // Semua nilai ini publik (ikut terbundel ke browser), jadi jangan taruh rahasia di sini.
 // Rahasia (mis. DISCORD_WEBHOOK_URL) tetap lewat env server, bukan file ini.
 
-import mvg01 from "../assets/mvg-01.webp";
+import mvg01 from "../assets/1.png";
 import mvg02 from "../assets/mvg-02.webp";
 
 export const APP_NAME = "Morpli PFP";
@@ -18,11 +18,11 @@ export const TIKTOK_URL = "https://tiktok.com/@_abiasa";
 // Disarankan 720x152 px (rasio ~4.7:1); sisi kiri foto sebaiknya tidak terlalu ramai
 // karena teks ada di situ.
 export const PROMO = {
-  url: "",
-  images: [mvg01, mvg02],
+  url: "https://discord.gg/Ct8r9j5a9",
+  images: [mvg01],
   interval: 4500,
-  title: "Birthday Website for You ✨",
-  text: "Create Birthday Website for your special person 🤍",
+  title: "Join Discord ✨",
+  text: "Join to get updates.",
 };
 
 // Link yang kosong otomatis disembunyikan

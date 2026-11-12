@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { FONTS, GRADIENTS, toCss } from "../lib/pfp";
 import { DECORS } from "../lib/decor";
+import { EFFECTS } from "../lib/effects";
 import {
   CheckIcon,
   CloseIcon,
   DownloadIcon,
+  EffectIcon,
   FontIcon,
   GradientIcon,
   MoonIcon,
@@ -12,7 +14,7 @@ import {
   SunIcon,
   TypeIcon,
 } from "./Icons";
-import PromoBanner from "./PromoBanner";
+
 import { useTheme } from "../hooks/useTheme";
 
 export function ToolButton({
@@ -48,6 +50,7 @@ export default function Controls({
   font,
   gradient,
   decors,
+  effect,
   letterFocused,
   saved,
   onFocusLetter,
@@ -55,6 +58,7 @@ export default function Controls({
   onGradient,
   onDecor,
   onClearDecor,
+  onEffect,
   onDownload,
 }) {
   const [panel, setPanel] = useState(null);
@@ -101,6 +105,13 @@ export default function Controls({
           onClick={() => toggle("decor")}
         >
           <SparkleIcon />
+        </ToolButton>
+        <ToolButton
+          label="Effect"
+          active={panel === "effect"}
+          onClick={() => toggle("effect")}
+        >
+          <EffectIcon />
         </ToolButton>
         <ToolButton
           label={saved ? "Saved" : "Download HD"}
@@ -193,9 +204,53 @@ export default function Controls({
             })}
           </div>
         )}
+        {panel === "effect" && (
+          <div className="bg-gray-50 border border-gray-200 h-24 flex max-w-full flex-col items-center justify-center gap-2 rounded-3xl px-4 dark:bg-surface dark:border-border">
+            <div className="flex items-center gap-1">
+              {EFFECTS.map((e) => (
+                <button
+                  key={e.id}
+                  type="button"
+                  aria-pressed={e.id === effect.id}
+                  onClick={() => onEffect({ ...effect, id: e.id })}
+                  className={`h-9 shrink-0 rounded-full px-4 text-[13px] font-semibold transition active:scale-95 ${
+                    e.id === effect.id
+                      ? "bg-ink text-white"
+                      : "text-ink hover:bg-white/60 dark:hover:bg-white/10"
+                  }`}
+                >
+                  {e.name}
+                </button>
+              ))}
+            </div>
+            <div className="flex items-end gap-4">
+              {[
+                ["amount", "Lengkung"],
+                ["weight", "Tebal"],
+              ].map(([key, label]) => (
+                <label
+                  key={key}
+                  className="flex flex-col items-center gap-0.5 text-[10px] font-medium text-ink/60"
+                >
+                  {label}
+                  <input
+                    type="range"
+                    min={0}
+                    max={100}
+                    value={effect[key]}
+                    disabled={effect.id === "none"}
+                    aria-label={label}
+                    onChange={(e) =>
+                      onEffect({ ...effect, [key]: Number(e.target.value) })
+                    }
+                    className="w-28 accent-ink transition disabled:opacity-30"
+                  />
+                </label>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
-
-      <PromoBanner />
     </div>
   );
 }

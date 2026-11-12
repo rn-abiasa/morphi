@@ -38,6 +38,13 @@ export const SparkleIcon = () => (
   </svg>
 );
 
+export const EffectIcon = () => (
+  <svg {...base}>
+    <circle cx="12" cy="12" r="8.5" />
+    <path d="M12 3.5c-3 3-3 14 0 17M12 3.5c3 3 3 14 0 17M3.5 12c3-3 14-3 17 0M3.5 12c3 3 14 3 17 0" />
+  </svg>
+);
+
 export const DownloadIcon = () => (
   <svg {...base}>
     <path d="M12 4v11m-4.5-4.5L12 15l4.5-4.5M5 20h14" />

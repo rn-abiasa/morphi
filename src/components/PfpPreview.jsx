@@ -9,6 +9,7 @@ export default function PfpPreview({
   font,
   gradient,
   decors,
+  effect,
   inputRef,
   onLetterChange,
   onFocusChange,
@@ -29,13 +30,14 @@ export default function PfpPreview({
           font,
           gradient,
           decors,
+          effect,
         });
       }
     })();
     return () => {
       cancelled = true;
     };
-  }, [letter, font, gradient, decors]);
+  }, [letter, font, gradient, decors, effect]);
 
   return (
     <Bezel glow={toCss(gradient)}>

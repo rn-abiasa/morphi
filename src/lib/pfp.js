@@ -1,4 +1,5 @@
 import { drawDecors } from "./decor";
+import { drawFisheyeLetter } from "./effects";
 
 export const FONTS = [
   {
@@ -216,7 +217,11 @@ export const fontSpec = (font, px) => `${font.weight} ${px}px ${font.family}`;
  * Gambar PFP persegi penuh (seperti referensi: gradient + huruf putih di tengah).
  * Dipakai untuk preview (720px) dan download HD (2048px) agar hasilnya identik.
  */
-export function drawPfp(canvas, size, { letter, font, gradient, decors = [] }) {
+export function drawPfp(
+  canvas,
+  size,
+  { letter, font, gradient, decors = [], effect },
+) {
   canvas.width = size;
   canvas.height = size;
   const ctx = canvas.getContext("2d");
@@ -250,6 +255,19 @@ export function drawPfp(canvas, size, { letter, font, gradient, decors = [] }) {
     const capAt100 = ctx.measureText("H").actualBoundingBoxAscent || 72;
     px = (size * font.cap * (count === 1 ? 1 : 0.74) * 100) / capAt100;
   }
+  if (effect?.id === "fisheye" && effect.amount > 0) {
+    const top = drawFisheyeLetter(ctx, size, {
+      letter,
+      font,
+      px,
+      ink: gradient.ink || "#ffffff",
+      amount: effect.amount,
+      weight: effect.weight,
+    });
+    drawDecors(ctx, size, decors, top);
+    return;
+  }
+
   ctx.font = fontSpec(font, px);
   ctx.textAlign = "left";
   ctx.textBaseline = "alphabetic";

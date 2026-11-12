@@ -1,11 +1,13 @@
 import { useRef, useState } from "react";
 import Navbar from "../components/Navbar";
+import PromoBanner from "../components/PromoBanner";
 import Footer from "../components/Footer";
 import PfpPreview from "../components/PfpPreview";
 import Controls from "../components/Controls";
 import SupportDialog from "../components/SupportDialog";
 import { FONTS, GRADIENTS, drawPfp, fontSpec } from "../lib/pfp";
 import { toggleDecor } from "../lib/decor";
+import { DEFAULT_EFFECT } from "../lib/effects";
 import { HD_SIZE, hashId, saveCanvas } from "../lib/save";
 
 export default function Index() {
@@ -13,6 +15,7 @@ export default function Index() {
   const [font, setFont] = useState(FONTS[0]);
   const [gradient, setGradient] = useState(GRADIENTS[0]);
   const [decors, setDecors] = useState([]);
+  const [effect, setEffect] = useState(DEFAULT_EFFECT);
   const [focused, setFocused] = useState(false);
   const [saved, setSaved] = useState(false);
   const [supportOpen, setSupportOpen] = useState(false);
@@ -25,12 +28,12 @@ export default function Index() {
       /* pakai fallback font */
     }
     const canvas = document.createElement("canvas");
-    drawPfp(canvas, HD_SIZE, { letter, font, gradient, decors });
+    drawPfp(canvas, HD_SIZE, { letter, font, gradient, decors, effect });
     // contoh nama file: morpli-letter-A-7B21D4.png
     const safe = (letter || "").replace(/[^\p{L}\p{N}]/gu, "") || "pfp";
     await saveCanvas(
       canvas,
-      `morpli-letter-${safe}-${hashId([letter, font.id, gradient.id, decors])}`,
+      `morpli-letter-${safe}-${hashId([letter, font.id, gradient.id, decors, effect])}`,
     );
     // notifikasi ke Discord (fire-and-forget, gagal pun tidak mengganggu unduhan)
     fetch("/api/notify", {
@@ -63,6 +66,7 @@ export default function Index() {
           font={font}
           gradient={gradient}
           decors={decors}
+          effect={effect}
           inputRef={inputRef}
           onLetterChange={setLetter}
           onFocusChange={setFocused}
@@ -71,6 +75,7 @@ export default function Index() {
           font={font}
           gradient={gradient}
           decors={decors}
+          effect={effect}
           letterFocused={focused}
           saved={saved}
           onFocusLetter={() => inputRef.current?.focus()}
@@ -78,8 +83,10 @@ export default function Index() {
           onGradient={setGradient}
           onDecor={(id) => setDecors((prev) => toggleDecor(prev, id))}
           onClearDecor={() => setDecors([])}
+          onEffect={setEffect}
           onDownload={download}
         />
+        <PromoBanner />
       </main>
       <Footer />
       <SupportDialog open={supportOpen} onClose={() => setSupportOpen(false)} />
