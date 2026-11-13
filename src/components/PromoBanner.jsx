@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { PROMO } from "../lib/site";
 import { ChevronIcon } from "./Icons";
 
-// Tambahkan UTM supaya klik dari Morpli terbaca di analytics web produk
+// Tag outbound links so clicks show up in the target site's analytics
 function withUtm(href) {
   try {
     const u = new URL(href);
@@ -14,9 +14,8 @@ function withUtm(href) {
   }
 }
 
-// Banner kecil: beberapa foto background yang bergantian (crossfade halus) + overlay teks.
-// Tanpa PROMO.url di src/lib/site.js, banner tidak ditampilkan.
-// Jika foto belum ada / gagal dimuat, gradient pink di bawahnya tetap tampil.
+// Rotating crossfade banner; renders nothing without PROMO.url.
+// The gradient layer underneath is the fallback when images are missing or fail to load.
 export default function PromoBanner() {
   const images = PROMO.images;
   const [index, setIndex] = useState(0);
@@ -24,7 +23,7 @@ export default function PromoBanner() {
 
   useEffect(() => {
     if (images.length < 2 || paused) return;
-    // Hormati pengguna yang memilih mengurangi gerakan: tampilkan foto pertama saja
+    // prefers-reduced-motion: stay on the first image
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const timer = setInterval(() => {
       if (!document.hidden) setIndex((n) => (n + 1) % images.length);
@@ -46,7 +45,7 @@ export default function PromoBanner() {
       onBlur={() => setPaused(false)}
       className="group relative isolate block h-[76px] w-52 mt-10 overflow-hidden rounded-[20px] shadow-[0_0_0_0.5px_rgba(0,0,0,0.1),0_8px_24px_-12px_rgba(0,0,0,0.35)] transition active:scale-[0.985]"
     >
-      {/* Semua foto ditumpuk; hanya yang aktif opacity-nya 1, sisanya memudar */}
+      {/* Images are stacked; only the active one has opacity 1 */}
       <div
         aria-hidden="true"
         style={{ backgroundImage: "linear-gradient(120deg, #ff8fb0, #ffb86b)" }}
@@ -62,7 +61,7 @@ export default function PromoBanner() {
           />
         ))}
       </div>
-      {/* Scrim gelap di sisi teks agar tetap terbaca di foto apa pun */}
+      {/* Dark scrim behind the text for contrast on any image */}
       <div
         aria-hidden="true"
         className="absolute inset-0 -z-10 bg-linear-to-r from-black/70 dark:from-black/90 via-black/35 dark:via-black/60 to-transparent"

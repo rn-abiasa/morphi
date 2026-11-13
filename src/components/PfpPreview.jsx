@@ -23,7 +23,7 @@ export default function PfpPreview({
       try {
         await document.fonts.load(fontSpec(font, 100), letter || "A");
       } catch {
-        /* pakai fallback font */
+        /* fall back to the default font */
       }
       if (!cancelled && canvasRef.current) {
         drawPfp(canvasRef.current, PREVIEW_SIZE, {

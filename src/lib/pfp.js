@@ -17,7 +17,7 @@ export const FONTS = [
       '"M PLUS Rounded 1c", "Arial Rounded MT Bold", system-ui, sans-serif',
     weight: 800,
     scale: 1,
-    cap: 0.386, // tinggi huruf kapital = 38,6% lebar kanvas, seperti gambar referensi
+    cap: 0.386, // cap height as a fraction of canvas width
   },
   {
     id: "sans",
@@ -63,8 +63,7 @@ export const FONTS = [
   },
 ];
 
-// Set "iOS": warna sistem iOS dengan gradient vertikal halus (terang di atas, pekat di bawah),
-// mirip gaya monogram di Kontak/Pesan. Ini pendekatan saya, bukan salinan aset Apple.
+// "iOS" set: system colors with a subtle vertical gradient (lighter on top, solid at the bottom)
 const lift = (hex, t) => {
   const n = parseInt(hex.slice(1), 16);
   const ch = [(n >> 16) & 255, (n >> 8) & 255, n & 255].map((v) =>
@@ -102,7 +101,7 @@ const IOS_GRADIENTS = IOS_COLORS.map(([name, color]) => ({
   ],
 }));
 
-// angle mengikuti CSS linear-gradient (180 = atas ke bawah)
+// angle follows CSS linear-gradient (180 = top to bottom)
 export const GRADIENTS = [
   {
     id: "graphite",
@@ -117,7 +116,7 @@ export const GRADIENTS = [
     id: "ash",
     name: "Ash",
     angle: 180,
-    // diukur dari gambar referensi: abu terang di atas, abu gelap hangat di bawah
+    // sampled from the reference image
     stops: [
       [0, "#b8b8b8"],
       [1, "#343231"],
@@ -214,10 +213,7 @@ export const toCss = (g) =>
 
 export const fontSpec = (font, px) => `${font.weight} ${px}px ${font.family}`;
 
-/**
- * Gambar PFP persegi penuh (seperti referensi: gradient + huruf putih di tengah).
- * Dipakai untuk preview (720px) dan download HD (2048px) agar hasilnya identik.
- */
+/** Draws the full square PFP. Shared by the preview and the HD export so both render identically. */
 export function drawPfp(
   canvas,
   size,
@@ -247,12 +243,12 @@ export function drawPfp(
     return;
   }
 
-  // Tinggi huruf kapital referensi ≈ 32% lebar kanvas
+  // Base glyph size relative to canvas width; two-letter monograms are smaller
   const count = Array.from(letter).length;
   let px = size * (count === 1 ? 0.46 : 0.34) * font.scale;
   if (font.cap) {
-    // Font dengan `cap`: ukuran dihitung dari tinggi huruf kapital sebenarnya ("H" pada 100px),
-    // sehingga tinggi huruf tepat sama untuk font apa pun.
+    // Fonts with `cap`: size from the real cap height (measure "H" at 100px)
+    // so letter height is the same across fonts.
     ctx.font = fontSpec(font, 100);
     const capAt100 = ctx.measureText("H").actualBoundingBoxAscent || 72;
     px = (size * font.cap * (count === 1 ? 1 : 0.74) * 100) / capAt100;

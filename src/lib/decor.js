@@ -1,8 +1,8 @@
-// Dekorasi memakai emoji bawaan perangkat (di iPhone/Mac tampil sebagai Apple Color Emoji)
+// Decors render as system emoji (Apple Color Emoji on iOS/macOS)
 const EMOJI_FONT =
   '"Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif';
 
-// slot "top": duduk di atas huruf (hanya satu). slot "corner": stiker di sekitar huruf (maks 3)
+// "top": sits above the letter (max 1). "corner": placed around the letter (max 3).
 export const DECORS = [
   { id: "crown", emoji: "👑", slot: "top", rotate: -10 },
   { id: "bow", emoji: "🎀", slot: "top", rotate: 14 },
@@ -23,7 +23,7 @@ export const DECORS = [
 const BY_ID = Object.fromEntries(DECORS.map((d) => [d.id, d]));
 const MAX_CORNERS = 3;
 
-// [x, y, rotasi] dalam pecahan lebar kanvas; semua berada di dalam area lingkaran
+// [x, y, rotation in degrees]; x/y are fractions of canvas width, all inside the circular crop
 const CORNERS = [
   [0.72, 0.27, 12],
   [0.27, 0.73, -12],

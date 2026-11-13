@@ -1,10 +1,8 @@
-// Kirim notifikasi unduhan ke /api/notify (diteruskan ke Discord oleh fungsi server).
-// Dikirim tanpa menunggu hasilnya; kegagalan tidak boleh mengganggu pengguna.
+// Fire-and-forget POST to /api/notify; failures must never affect the user.
 
 const KEY = "morpli:visitor";
 
-// ID pengunjung anonim (acak, disimpan di perangkat) + hitungan unduhannya,
-// supaya di Discord terlihat berapa pengguna berbeda dan berapa kali mereka mengunduh.
+// Anonymous visitor id + download counter, persisted in localStorage.
 function visitor() {
   try {
     const saved = JSON.parse(localStorage.getItem(KEY) || "null");
@@ -15,7 +13,7 @@ function visitor() {
     localStorage.setItem(KEY, JSON.stringify(v));
     return v;
   } catch {
-    return { id: "anon", n: 0 }; // mis. mode privat yang memblokir penyimpanan
+    return { id: "anon", n: 0 }; // storage blocked (e.g. private mode)
   }
 }
 
@@ -36,6 +34,6 @@ export function notifyDownload({ letter, font, gradient, decors }) {
       keepalive: true,
     }).catch(() => {});
   } catch {
-    /* abaikan */
+    /* ignore */
   }
 }

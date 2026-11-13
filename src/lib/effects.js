@@ -1,4 +1,4 @@
-// Efek untuk huruf. Setiap efek hanya mengubah lapisan huruf (gradient & dekor tetap).
+// Letter effects. They only transform the glyph layer; background and decors are untouched.
 export const EFFECTS = [
   { id: "none", name: "Off" },
   { id: "fisheye", name: "Fisheye" },
@@ -9,17 +9,14 @@ export const DEFAULT_EFFECT = { id: "none", amount: 100, weight: 50 };
 const SQRT2 = Math.SQRT2;
 
 /**
- * Fisheye "huruf memenuhi lingkaran" seperti referensi (monogram ME).
+ * Fisheye: maps the glyph bounding box onto a circle (elliptical grid mapping, square -> disc),
+ * so the corners get pulled in along the circle and the middle gets magnified.
+ * `amount` (0-100) blends between the plain glyph and the full circle.
  *
- * Cara kerja: kotak pembatas (bounding box) huruf dipetakan ke sebuah lingkaran memakai
- * pemetaan elips (disc <-> square). Sudut-sudut huruf ditarik masuk mengikuti lengkung
- * lingkaran, sedangkan bagian tengah membesar, jadi tepi huruf melengkung seperti lensa.
- * `amount` 0-100 mencampur bentuk asli (0) sampai penuh jadi lingkaran (100).
+ * Done per pixel with an inverse mapping (destination -> source) and bilinear sampling of the
+ * glyph alpha, which keeps edges smooth at both preview and HD sizes.
  *
- * Dihitung per piksel (inverse mapping + sampling bilinear pada alpha) supaya tepi tetap
- * halus, baik di preview 720px maupun HD 4028px.
- *
- * Mengembalikan y bagian atas huruf (untuk posisi dekor "top").
+ * Returns the y of the glyph's top edge (used to place "top" decors).
  */
 export function drawFisheyeLetter(
   ctx,
@@ -27,12 +24,12 @@ export function drawFisheyeLetter(
   { letter, font, px, ink, amount, weight = 50 },
 ) {
   const s = Math.min(1, Math.max(0, amount / 100));
-  const R = size * 0.38; // jari-jari lingkaran hasil
+  const R = size * 0.38; // radius of the target circle
   const spec = (p) => `${font.weight} ${p}px ${font.family}`;
   const cx = size / 2;
   const cy = size / 2;
 
-  // 1) ukur huruf pada ukuran asli
+  // 1) measure the glyph at its natural size
   const meas = document.createElement("canvas").getContext("2d");
   meas.font = spec(px);
   const m0 = meas.measureText(letter);
@@ -40,12 +37,11 @@ export function drawFisheyeLetter(
   const hh0 = (m0.actualBoundingBoxAscent + m0.actualBoundingBoxDescent) / 2;
   if (!hw0 || !hh0) return cy;
 
-  // 2) render huruf ke kanvas sumber, dibesarkan (g) agar tidak pecah saat diregangkan
+  // 2) render the glyph to a source canvas, upscaled by g so stretching doesn't blur it
   const g = Math.min(2.5, Math.max(1, 1 + (Math.max(R / hw0, R / hh0) - 1) * s));
   const src = document.createElement("canvas");
   const sctx = src.getContext("2d", { willReadFrequently: true });
-  // `weight` (0-100): menebalkan huruf lewat stroke + merapatkan jarak antarhuruf,
-  // supaya hasilnya gemuk seperti monogram referensi, bukan ramping.
+  // `weight` (0-100): fattens the glyph with a stroke and tightens letter spacing
   const sw = px * g * 0.3 * (weight / 100);
   const setup = (c) => {
     c.font = spec(px * g);
@@ -66,7 +62,7 @@ export function drawFisheyeLetter(
   const H = Math.ceil(asc + desc) + pad * 2;
   src.width = W;
   src.height = H;
-  setup(sctx); // ukuran kanvas berubah -> state di-reset
+  setup(sctx); // resizing the canvas reset its context state
   sctx.textAlign = "left";
   sctx.textBaseline = "alphabetic";
   sctx.fillStyle = "#000";
@@ -74,12 +70,12 @@ export function drawFisheyeLetter(
   sctx.fillText(letter, pad + bl, pad + asc);
   if (sw > 0) sctx.strokeText(letter, pad + bl, pad + asc);
   const alpha = sctx.getImageData(0, 0, W, H).data;
-  const scx = pad + (bl + br) / 2; // pusat bbox pada kanvas sumber
+  const scx = pad + (bl + br) / 2; // bbox center in source-canvas pixels
   const scy = pad + (asc + desc) / 2;
-  const hw = (bl + br) / 2 / g; // setengah lebar/tinggi bbox dalam satuan "asli"
+  const hw = (bl + br) / 2 / g; // bbox half-extents in natural (not upscaled) units
   const hh = (asc + desc) / 2 / g;
 
-  // 3) petakan balik (tujuan -> sumber) hanya di area yang mungkin terisi
+  // 3) inverse-map destination -> source, only over the area that can contain ink
   const E = Math.min(
     Math.floor(size / 2),
     Math.ceil(Math.max(R, hw, hh) * 1.06) + 2,
@@ -100,7 +96,7 @@ export function drawFisheyeLetter(
       const ny = dy / R;
       const r = Math.hypot(nx, ny);
 
-      // disc -> square (elliptical grid mapping); di luar lingkaran diperpanjang linear
+      // disc -> square (elliptical grid mapping); outside the circle, extend linearly
       const k = r > 1 ? 1 / r : 1;
       const x = nx * k;
       const y = ny * k;
@@ -112,15 +108,16 @@ export function drawFisheyeLetter(
       const v =
         0.5 * Math.sqrt(Math.max(0, 2 - x2 + y2 + 2 * SQRT2 * y)) -
         0.5 * Math.sqrt(Math.max(0, 2 - x2 + y2 - 2 * SQRT2 * y));
-      const sk = r > 1 ? r : 1;
+      const sk = r > 1 ? r : 1; // undo the normalization for the linear extension
 
+      // blend identity (s = 0) with the disc->square mapping (s = 1)
       const natX = (1 - s) * dx + s * u * sk * hw;
       const natY = (1 - s) * dy + s * v * sk * hh;
       const sx = scx + natX * g - 0.5;
       const sy = scy + natY * g - 0.5;
       if (sx < 0 || sy < 0 || sx > W - 1 || sy > H - 1) continue;
 
-      // bilinear pada kanal alpha
+      // bilinear sample of the alpha channel
       const x0 = sx | 0;
       const y0 = sy | 0;
       const x1 = Math.min(x0 + 1, W - 1);

@@ -5,7 +5,7 @@ import "./index.css";
 
 import Index from "./pages/index";
 
-// Inisialisasi tema sebelum React render untuk mencegah flash warna awal
+// Apply the stored theme before first render to avoid a flash of the wrong theme
 const THEME_KEY = "morpli-theme";
 const stored = localStorage.getItem(THEME_KEY);
 const isDark =

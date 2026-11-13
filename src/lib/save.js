@@ -1,7 +1,7 @@
-// Ukuran unduhan HD, penyimpan canvas ke PNG, dan kode pendek untuk nama file
+// HD export size, canvas -> PNG download, and a short hash for file names
 export const HD_SIZE = 4028;
 
-// Simpan canvas sebagai PNG; promise selesai setelah unduhan dipicu
+// Downloads the canvas as PNG; resolves once the download is triggered
 export const saveCanvas = (canvas, name) =>
   new Promise((resolve) => {
     canvas.toBlob((blob) => {
@@ -19,8 +19,8 @@ export const saveCanvas = (canvas, name) =>
     }, "image/png");
   });
 
-// Kode 6 karakter dari data apa pun, dipakai agar nama file unduhan unik
-// (contoh: morpli-letter-A-7B21D4.png)
+// FNV-1a hash of the JSON-serialized value, cut to 6 hex chars (file name suffix,
+// e.g. morpli-letter-A-7B21D4.png)
 export function hashId(value) {
   const s = JSON.stringify(value);
   let h = 2166136261;

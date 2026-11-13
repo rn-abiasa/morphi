@@ -27,7 +27,7 @@ export default function Index() {
     try {
       await document.fonts.load(fontSpec(font, 100), letter || "A");
     } catch {
-      /* pakai fallback font */
+      /* fall back to the default font */
     }
     const canvas = document.createElement("canvas");
     drawPfp(canvas, HD_SIZE, {
@@ -38,13 +38,13 @@ export default function Index() {
       effect,
       bursts,
     });
-    // contoh nama file: morpli-letter-A-7B21D4.png
+    // file name looks like morpli-letter-A-7B21D4.png
     const safe = (letter || "").replace(/[^\p{L}\p{N}]/gu, "") || "pfp";
     await saveCanvas(
       canvas,
       `morpli-letter-${safe}-${hashId([letter, font.id, gradient.id, decors, effect, bursts])}`,
     );
-    // notifikasi ke Discord (fire-and-forget, gagal pun tidak mengganggu unduhan)
+    // Discord notification: fire-and-forget, a failure must not block the download
     fetch("/api/notify", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -57,7 +57,7 @@ export default function Index() {
     }).catch(() => {});
     setSaved(true);
     setTimeout(() => setSaved(false), 1600);
-    // beri jeda agar konfirmasi "Saved" terlihat dulu sebelum dialog muncul
+    // delay so the "Saved" state is visible before the dialog opens
     setTimeout(() => setSupportOpen(true), 600);
   };
 

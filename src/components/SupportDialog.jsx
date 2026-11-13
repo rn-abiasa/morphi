@@ -1,12 +1,12 @@
 import { useEffect, useRef } from "react";
 import { TIKTOK_URL } from "../lib/site";
 
-// Dialog setelah download. Memakai elemen <dialog> bawaan browser:
-// fokus terkunci di dalamnya, Esc menutup, dan klik di luar kotak juga menutup.
+// Post-download dialog on the native <dialog> (focus trap and Esc come for free;
+// backdrop clicks are handled below).
 export default function SupportDialog({ open, onClose }) {
   const ref = useRef(null);
 
-  // Sinkronkan prop `open` dengan elemen <dialog>
+  // Sync the `open` prop with the dialog element
   useEffect(() => {
     const dialog = ref.current;
     if (!dialog) return;
@@ -14,7 +14,7 @@ export default function SupportDialog({ open, onClose }) {
     if (!open && dialog.open) dialog.close();
   }, [open]);
 
-  // Tanpa link TikTok di .env, dialog tidak ditampilkan
+  // No TIKTOK_URL configured: render nothing
   if (!TIKTOK_URL) return null;
 
   return (
@@ -23,7 +23,7 @@ export default function SupportDialog({ open, onClose }) {
       aria-labelledby="support-title"
       onClose={onClose}
       onClick={(e) => {
-        if (e.target === ref.current) onClose(); // klik di area gelap
+        if (e.target === ref.current) onClose(); // backdrop click
       }}
       className="m-auto w-[min(88vw,340px)] rounded-[28px] border-0 bg-transparent p-0 text-ink backdrop:bg-black/30 dark:backdrop:bg-black/60 backdrop:backdrop-blur-sm"
     >

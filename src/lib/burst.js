@@ -1,7 +1,6 @@
-// Stiker "burst" bergaya doodle komik (petir, coretan, kuas, ledakan) seperti gambar referensi.
-// Semuanya SVG: tiap stiker adalah daftar bentuk pada viewBox 0 0 100 100. Data yang sama dipakai
-// untuk ikon di panel (inline <svg>) dan untuk menggambar ke canvas lewat Path2D, jadi tetap
-// tajam di preview 720px maupun download HD.
+// Comic-doodle stickers. Each sticker is a list of SVG shapes in a 0 0 100 100 viewBox.
+// The same data feeds the panel icons (inline <svg>) and the canvas (Path2D), so output
+// stays sharp at any export size.
 
 const INK = "#1d1b24";
 const YELLOW = "#FFD21F";
@@ -9,7 +8,7 @@ const BLUE = "#4DA6EA";
 const RED = "#F2503F";
 const ORANGE = "#FF7A45";
 
-// Ledakan bergerigi (starburst) dengan sedikit variasi agar terlihat digambar tangan
+// Jagged starburst; outer radius is jittered so it doesn't look machine-regular
 function burstPath(cx, cy, rOuter, rInner, points, rot = 0) {
   let d = "";
   for (let i = 0; i < points * 2; i++) {
@@ -23,7 +22,7 @@ function burstPath(cx, cy, rOuter, rInner, points, rot = 0) {
   return `${d}Z`;
 }
 
-// Garis dengan outline tipis gelap (seperti squiggle pada referensi): outline dulu, lalu warna
+// Dark underlay stroke + colored stroke on top = outlined line
 const outlined = (d, color, w = 6) => [
   { d, stroke: INK, w: w + 4 },
   { d, stroke: color, w },
@@ -174,8 +173,9 @@ export const BURSTS = [
 const BY_ID = Object.fromEntries(BURSTS.map((b) => [b.id, b]));
 export const MAX_BURSTS = 8;
 
-// [x, y, ukuran, rotasi]: pecahan lebar kanvas. Stiker "berdiri" menunjuk ke atas, lalu diputar
-// agar memancar keluar dari huruf, seperti pada referensi. Semua tetap di dalam area lingkaran.
+// [x, y, size, rotation in degrees]; x/y/size are fractions of canvas width.
+// Stickers are drawn pointing up, then rotated to radiate outward from the letter.
+// All slots stay inside the circular crop.
 const SLOTS = [
   [0.8, 0.3, 0.2, 18],
   [0.2, 0.3, 0.2, -18],
@@ -186,7 +186,7 @@ const SLOTS = [
   [0.28, 0.82, 0.19, -150],
   [0.5, 0.9, 0.15, 180],
 ];
-// Urutan pengisian: diagonal dulu supaya komposisi seimbang walau stikernya sedikit
+// Fill order: diagonals first so a few stickers still look balanced
 const SLOT_ORDER = [0, 1, 5, 6, 2, 3, 4, 7];
 
 export function toggleBurst(prev, id) {

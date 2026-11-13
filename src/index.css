@@ -39,7 +39,7 @@ body {
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-/* Dot pattern: memudar ke arah tepi layar (disesuaikan agar tetap terlihat di dark mode) */
+/* Dot grid that fades toward the edges (alpha tuned separately for dark mode) */
 @utility dots {
   background-image: radial-gradient(
     circle at center,
@@ -66,7 +66,7 @@ body {
   );
 }
 
-/* Liquid glass: blur + saturasi, highlight tipis di tepi atas, bayangan lembut */
+/* Frosted glass: blur + saturation, thin top-edge highlight, soft shadow */
 @utility glass {
   background: linear-gradient(
     145deg,
@@ -96,8 +96,7 @@ body {
   }
 }
 
-/* Kursor kustom: dua SVG kecil lewat CSS, tanpa JavaScript, jadi tetap ringan.
-   Panah gelap berbingkai putih dengan kilau pink; saat di atas tombol berubah jadi bulatan pink berkilau. */
+/* Custom cursors as inline SVG data URIs (no JS). The pointer variant swaps in over interactive elements. */
 :root {
   --cursor-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M5 3.5V18.5L8.9 15L11.6 20.6L14.2 19.4L11.6 13.9L16.6 13.6Z' fill='%23241a22' stroke='%23fff' stroke-width='1.8' stroke-linejoin='round'/%3E%3Cpath d='M19 3L19.9 5.1L22 6L19.9 6.9L19 9L18.1 6.9L16 6L18.1 5.1Z' fill='%23ff8fb0'/%3E%3C/svg%3E")
     5 4, default;
@@ -123,7 +122,7 @@ button:disabled {
   cursor: var(--cursor-arrow);
 }
 
-/* Dialog muncul dengan gerakan halus (otomatis dipersingkat jika pengguna memilih reduced motion) */
+/* Dialog enter animation (shortened by the reduced-motion rule below) */
 dialog[open] {
   animation: dialog-in 0.18s ease-out;
 }

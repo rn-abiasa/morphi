@@ -19,7 +19,7 @@ import {
 
 import { useTheme } from "../hooks/useTheme";
 
-// Pratinjau stiker burst: bentuk SVG yang sama dengan yang digambar ke canvas
+// Renders a burst sticker's shapes with the same data the canvas uses
 function BurstSvg({ burst }) {
   return (
     <svg viewBox="0 0 100 100" className="size-full overflow-visible" aria-hidden="true">
@@ -156,7 +156,7 @@ export default function Controls({
         </ToolButton>
       </div>
 
-      {/* Tinggi tetap supaya layout tidak loncat saat panel dibuka */}
+      {/* Fixed height so the layout doesn't jump when a panel opens */}
       <div className="flex h-12 w-full justify-center mb-5">
         {panel === "font" && (
           <div className="bg-gray-50 border border-gray-200 h-24 grid grid-cols-4 max-w-full items-center gap-1 overflow-x-auto rounded-3xl p-2 [scrollbar-width:none] dark:bg-surface dark:border-border">

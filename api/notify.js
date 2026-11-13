@@ -1,12 +1,11 @@
 /* global process */
 
-// Fungsi serverless Vercel: meneruskan notifikasi unduhan ke Discord.
-// URL webhook hanya ada di server (DISCORD_WEBHOOK_URL) dan tidak pernah dikirim ke browser.
+// Vercel function: relays download events to a Discord webhook.
+// The webhook URL stays server-side (DISCORD_WEBHOOK_URL).
 
-// Pembatas kasar per alamat IP (berlaku per instans fungsi). Untuk perlindungan yang lebih kuat,
-// aktifkan Vercel Firewall atau gunakan penyimpanan bersama seperti Upstash.
+// In-memory per-IP rate limit. State is per function instance, so this is best-effort only.
 const hits = new Map();
-const LIMIT = 20; // maksimal permintaan per jendela
+const LIMIT = 20; // max requests per window
 const WINDOW_MS = 60_000;
 
 function limited(ip) {
@@ -23,7 +22,7 @@ function limited(ip) {
   return entry.count > LIMIT;
 }
 
-// Bersihkan teks dari pengguna: buang karakter kontrol dan simbol markdown/mention, lalu potong
+// Strip control chars and markdown/mention symbols from user input, then truncate
 const clean = (value, max = 40) =>
   String(value ?? "")
     .replace(/[\u0000-\u001f`*_~|>\\[\]()@#]/g, "")
@@ -34,15 +33,15 @@ export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).end();
 
   const webhook = process.env.DISCORD_WEBHOOK_URL;
-  if (!webhook) return res.status(204).end(); // belum dikonfigurasi: abaikan diam-diam
+  if (!webhook) return res.status(204).end(); // not configured: no-op
 
-  // Hanya terima permintaan dari situs ini sendiri (atau localhost saat pengembangan)
+  // Same-origin only (localhost allowed for dev)
   const origin = req.headers.origin || "";
   let originHost = "";
   try {
     originHost = new URL(origin).host;
   } catch {
-    /* origin tidak valid */
+    /* malformed origin */
   }
   const isLocal = /^(localhost|127\.0\.0\.1)(:\d+)?$/.test(originHost);
   if (!originHost || (originHost !== req.headers.host && !isLocal)) {
@@ -72,7 +71,7 @@ export default async function handler(req, res) {
 
   const payload = {
     username: "Morpli",
-    allowed_mentions: { parse: [] }, // pastikan tidak ada @everyone atau ping dari isi kiriman
+    allowed_mentions: { parse: [] }, // block @everyone / pings from user-supplied text
     embeds: [
       {
         title: "New PFP downloaded",

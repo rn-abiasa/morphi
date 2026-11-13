@@ -1,4 +1,5 @@
-// Bingkai kaca berbentuk lingkaran + cahaya warna di belakangnya
+// Circular preview frame (rounded square on sm+). Clips children and provides the
+// container-query width that the letter input's cqw font size depends on.
 export default function Bezel({ glow, children }) {
   return (
     <div className="relative w-[min(56vw,232px)] sm:w-[248px]">
