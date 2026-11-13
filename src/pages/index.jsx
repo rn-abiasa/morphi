@@ -7,6 +7,7 @@ import Controls from "../components/Controls";
 import SupportDialog from "../components/SupportDialog";
 import { FONTS, GRADIENTS, drawPfp, fontSpec } from "../lib/pfp";
 import { toggleDecor } from "../lib/decor";
+import { toggleBurst } from "../lib/burst";
 import { DEFAULT_EFFECT } from "../lib/effects";
 import { HD_SIZE, hashId, saveCanvas } from "../lib/save";
 
@@ -16,6 +17,7 @@ export default function Index() {
   const [gradient, setGradient] = useState(GRADIENTS[0]);
   const [decors, setDecors] = useState([]);
   const [effect, setEffect] = useState(DEFAULT_EFFECT);
+  const [bursts, setBursts] = useState([]);
   const [focused, setFocused] = useState(false);
   const [saved, setSaved] = useState(false);
   const [supportOpen, setSupportOpen] = useState(false);
@@ -28,12 +30,19 @@ export default function Index() {
       /* pakai fallback font */
     }
     const canvas = document.createElement("canvas");
-    drawPfp(canvas, HD_SIZE, { letter, font, gradient, decors, effect });
+    drawPfp(canvas, HD_SIZE, {
+      letter,
+      font,
+      gradient,
+      decors,
+      effect,
+      bursts,
+    });
     // contoh nama file: morpli-letter-A-7B21D4.png
     const safe = (letter || "").replace(/[^\p{L}\p{N}]/gu, "") || "pfp";
     await saveCanvas(
       canvas,
-      `morpli-letter-${safe}-${hashId([letter, font.id, gradient.id, decors, effect])}`,
+      `morpli-letter-${safe}-${hashId([letter, font.id, gradient.id, decors, effect, bursts])}`,
     );
     // notifikasi ke Discord (fire-and-forget, gagal pun tidak mengganggu unduhan)
     fetch("/api/notify", {
@@ -67,6 +76,7 @@ export default function Index() {
           gradient={gradient}
           decors={decors}
           effect={effect}
+          bursts={bursts}
           inputRef={inputRef}
           onLetterChange={setLetter}
           onFocusChange={setFocused}
@@ -76,6 +86,7 @@ export default function Index() {
           gradient={gradient}
           decors={decors}
           effect={effect}
+          bursts={bursts}
           letterFocused={focused}
           saved={saved}
           onFocusLetter={() => inputRef.current?.focus()}
@@ -84,6 +95,8 @@ export default function Index() {
           onDecor={(id) => setDecors((prev) => toggleDecor(prev, id))}
           onClearDecor={() => setDecors([])}
           onEffect={setEffect}
+          onBurst={(id) => setBursts((prev) => toggleBurst(prev, id))}
+          onClearBurst={() => setBursts([])}
           onDownload={download}
         />
         <PromoBanner />

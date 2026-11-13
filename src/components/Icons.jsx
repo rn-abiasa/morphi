@@ -45,6 +45,12 @@ export const EffectIcon = () => (
   </svg>
 );
 
+export const BurstIcon = () => (
+  <svg {...base}>
+    <path d="M13 3 6 13h5l-1 8 8-11h-5z" />
+  </svg>
+);
+
 export const DownloadIcon = () => (
   <svg {...base}>
     <path d="M12 4v11m-4.5-4.5L12 15l4.5-4.5M5 20h14" />

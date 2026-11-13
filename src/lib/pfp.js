@@ -1,4 +1,5 @@
 import { drawDecors } from "./decor";
+import { drawBursts } from "./burst";
 import { drawFisheyeLetter } from "./effects";
 
 export const FONTS = [
@@ -220,7 +221,7 @@ export const fontSpec = (font, px) => `${font.weight} ${px}px ${font.family}`;
 export function drawPfp(
   canvas,
   size,
-  { letter, font, gradient, decors = [], effect },
+  { letter, font, gradient, decors = [], effect, bursts = [] },
 ) {
   canvas.width = size;
   canvas.height = size;
@@ -241,6 +242,7 @@ export function drawPfp(
   ctx.fillRect(0, 0, size, size);
 
   if (!letter) {
+    drawBursts(ctx, size, bursts);
     drawDecors(ctx, size, decors, size * 0.34);
     return;
   }
@@ -264,6 +266,7 @@ export function drawPfp(
       amount: effect.amount,
       weight: effect.weight,
     });
+    drawBursts(ctx, size, bursts);
     drawDecors(ctx, size, decors, top);
     return;
   }
@@ -280,5 +283,6 @@ export function drawPfp(
   ctx.fillStyle = gradient.ink || "#ffffff";
   ctx.fillText(letter, x, y);
 
+  drawBursts(ctx, size, bursts);
   drawDecors(ctx, size, decors, y - m.actualBoundingBoxAscent);
 }

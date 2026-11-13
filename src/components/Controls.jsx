@@ -2,7 +2,9 @@ import { useState } from "react";
 import { FONTS, GRADIENTS, toCss } from "../lib/pfp";
 import { DECORS } from "../lib/decor";
 import { EFFECTS } from "../lib/effects";
+import { BURSTS } from "../lib/burst";
 import {
+  BurstIcon,
   CheckIcon,
   CloseIcon,
   DownloadIcon,
@@ -16,6 +18,25 @@ import {
 } from "./Icons";
 
 import { useTheme } from "../hooks/useTheme";
+
+// Pratinjau stiker burst: bentuk SVG yang sama dengan yang digambar ke canvas
+function BurstSvg({ burst }) {
+  return (
+    <svg viewBox="0 0 100 100" className="size-full overflow-visible" aria-hidden="true">
+      {burst.shapes.map((s, i) => (
+        <path
+          key={i}
+          d={s.d}
+          fill={s.fill ?? "none"}
+          stroke={s.stroke ?? "none"}
+          strokeWidth={s.w ?? 3}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      ))}
+    </svg>
+  );
+}
 
 export function ToolButton({
   label,
@@ -51,6 +72,7 @@ export default function Controls({
   gradient,
   decors,
   effect,
+  bursts,
   letterFocused,
   saved,
   onFocusLetter,
@@ -59,6 +81,8 @@ export default function Controls({
   onDecor,
   onClearDecor,
   onEffect,
+  onBurst,
+  onClearBurst,
   onDownload,
 }) {
   const [panel, setPanel] = useState(null);
@@ -112,6 +136,13 @@ export default function Controls({
           onClick={() => toggle("effect")}
         >
           <EffectIcon />
+        </ToolButton>
+        <ToolButton
+          label="Burst"
+          active={panel === "burst"}
+          onClick={() => toggle("burst")}
+        >
+          <BurstIcon />
         </ToolButton>
         <ToolButton
           label={saved ? "Saved" : "Download HD"}
@@ -248,6 +279,40 @@ export default function Controls({
                 </label>
               ))}
             </div>
+          </div>
+        )}
+        {panel === "burst" && (
+          <div className="bg-gray-50 border border-gray-200 h-24 flex max-w-full items-center gap-1 overflow-x-auto rounded-3xl p-2 [scrollbar-width:none] dark:bg-surface dark:border-border">
+            <button
+              type="button"
+              title="Clear burst"
+              aria-label="Clear burst"
+              disabled={bursts.length === 0}
+              onClick={onClearBurst}
+              className="grid size-10 shrink-0 place-items-center rounded-full text-ink/60 transition hover:bg-white/60 dark:hover:bg-white/10 active:scale-90 disabled:opacity-30 disabled:hover:bg-transparent"
+            >
+              <CloseIcon />
+            </button>
+            {BURSTS.map((b) => {
+              const on = bursts.includes(b.id);
+              return (
+                <button
+                  key={b.id}
+                  type="button"
+                  title={b.name}
+                  aria-label={`Burst ${b.name}`}
+                  aria-pressed={on}
+                  onClick={() => onBurst(b.id)}
+                  className={`grid size-12 shrink-0 place-items-center rounded-2xl p-2 transition active:scale-90 ${
+                    on
+                      ? "bg-white/20 shadow-[inset_0_1px_0_#fff,0_1px_4px_rgba(255,255,255,0.1)] dark:bg-white/30 dark:shadow-[inset_0_1px_0_#fff,0_1px_4px_rgba(255,255,255,0.05)]"
+                      : "hover:bg-white/50 dark:hover:bg-white/10"
+                  }`}
+                >
+                  <BurstSvg burst={b} />
+                </button>
+              );
+            })}
           </div>
         )}
       </div>
