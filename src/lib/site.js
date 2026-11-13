@@ -1,7 +1,7 @@
 // Site config. Everything here ships in the client bundle, so no secrets
 // (those stay in server env, e.g. DISCORD_WEBHOOK_URL).
 
-import mvg01 from "../assets/2.png";
+import mvg01 from "../assets/2.webp";
 import mvg02 from "../assets/mvg-02.webp";
 
 export const APP_NAME = "Morpli PFP";
