@@ -51,6 +51,36 @@ export const BurstIcon = () => (
   </svg>
 );
 
+export const PaletteIcon = () => (
+  <svg {...base}>
+    <path d="M12 3.5a8.5 8.5 0 1 0 0 17c1.4 0 2-1 1.5-2.1-.6-1.3.2-2.4 1.6-2.4H17a3.5 3.5 0 0 0 3.5-3.5C20.5 6.9 16.7 3.5 12 3.5z" />
+    <circle cx="7.8" cy="11.2" r="1" fill="currentColor" stroke="none" />
+    <circle cx="10.8" cy="7.6" r="1" fill="currentColor" stroke="none" />
+    <circle cx="15.4" cy="8.6" r="1" fill="currentColor" stroke="none" />
+  </svg>
+);
+
+export const BackdropIcon = () => (
+  <svg {...base}>
+    <rect x="4" y="4" width="16" height="16" rx="5" />
+    <path d="M20 12.5V15a5 5 0 0 1-5 5h-2.5z" fill="currentColor" opacity="0.35" stroke="none" />
+  </svg>
+);
+
+export const FigureIcon = () => (
+  <svg {...base}>
+    <circle cx="12" cy="8.5" r="3.4" />
+    <path d="M5.5 20c.6-4 3.3-6 6.5-6s5.9 2 6.5 6" />
+  </svg>
+);
+
+export const ShapeIcon = () => (
+  <svg {...base}>
+    <circle cx="12" cy="9.5" r="5.5" />
+    <path d="M8 20.5c.4-2.2 1.9-3.4 4-3.4s3.6 1.2 4 3.4" />
+  </svg>
+);
+
 export const DownloadIcon = () => (
   <svg {...base}>
     <path d="M12 4v11m-4.5-4.5L12 15l4.5-4.5M5 20h14" />

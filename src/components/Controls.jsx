@@ -11,13 +11,9 @@ import {
   EffectIcon,
   FontIcon,
   GradientIcon,
-  MoonIcon,
   SparkleIcon,
-  SunIcon,
   TypeIcon,
 } from "./Icons";
-
-import { useTheme } from "../hooks/useTheme";
 
 // Renders a burst sticker's shapes with the same data the canvas uses
 function BurstSvg({ burst }) {
@@ -88,10 +84,6 @@ export default function Controls({
   const [panel, setPanel] = useState(null);
   const toggle = (id) => setPanel((p) => (p === id ? null : id));
 
-  const { toggleTheme, iconForTheme } = useTheme();
-  const iconName = iconForTheme();
-  const ThemeIcon = iconName === "sun" ? SunIcon : MoonIcon;
-
   return (
     <div className="flex w-full max-w-sm flex-col items-center gap-3">
       <div
@@ -150,9 +142,6 @@ export default function Controls({
           onClick={onDownload}
         >
           {saved ? <CheckIcon /> : <DownloadIcon />}
-        </ToolButton>
-        <ToolButton label="Tema" onClick={toggleTheme}>
-          <ThemeIcon />
         </ToolButton>
       </div>
 
