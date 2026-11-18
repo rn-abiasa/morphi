@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FONTS, GRADIENTS, toCss } from "../lib/pfp";
+import { FONTS, GRADIENTS, makeCustomGradient, toCss } from "../lib/pfp";
 import { DECORS } from "../lib/decor";
 import { EFFECTS } from "../lib/effects";
 import { BURSTS } from "../lib/burst";
@@ -82,7 +82,13 @@ export default function Controls({
   onDownload,
 }) {
   const [panel, setPanel] = useState(null);
+  const [custom, setCustom] = useState(["#ff8a5c", "#6a2cff"]);
   const toggle = (id) => setPanel((p) => (p === id ? null : id));
+
+  const updateCustom = (next) => {
+    setCustom(next);
+    onGradient(makeCustomGradient(next[0], next[1]));
+  };
 
   return (
     <div className="flex w-full max-w-sm flex-col items-center gap-3">
@@ -146,7 +152,7 @@ export default function Controls({
       </div>
 
       {/* Fixed height so the layout doesn't jump when a panel opens */}
-      <div className="flex h-12 w-full justify-center mb-5">
+      <div className="relative flex h-12 w-full justify-center mb-5">
         {panel === "font" && (
           <div className="bg-gray-50 border border-gray-200 h-24 grid grid-cols-4 max-w-full items-center gap-1 overflow-x-auto rounded-3xl p-2 [scrollbar-width:none] dark:bg-surface dark:border-border">
             {FONTS.map((f) => (
@@ -170,25 +176,80 @@ export default function Controls({
           </div>
         )}
         {panel === "gradient" && (
-          <div className="bg-gray-50 border border-gray-200 h-26 grid grid-cols-6 max-w-full items-center gap-3 overflow-x-auto rounded-3xl p-4 [scrollbar-width:none] dark:bg-surface dark:border-border">
-            {GRADIENTS.map((g, i) => (
+          <div className="bg-gray-50 border border-gray-200 absolute top-0 left-1/2 z-30 flex w-max max-w-full -translate-x-1/2 flex-col gap-3 rounded-3xl p-4 shadow-xl dark:bg-surface dark:border-border">
+            <div className="grid grid-cols-7 items-center gap-3">
+              {GRADIENTS.map((g) => (
+                <button
+                  key={g.id}
+                  type="button"
+                  title={g.name}
+                  aria-label={`Gradient ${g.name}`}
+                  aria-pressed={g.id === gradient.id}
+                  onClick={() => onGradient(g)}
+                  style={{ backgroundImage: toCss(g) }}
+                  className={`size-8 shrink-0 rounded-full shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_0_0_0.5px_rgba(0,0,0,0.15)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_0_0_0.5px_rgba(255,255,255,0.1)] transition active:scale-90 ${
+                    g.id === gradient.id
+                      ? "outline-2 outline-offset-2 outline-ink"
+                      : ""
+                  }`}
+                />
+              ))}
+              {/* Custom color: applies the current picks; shows them once active */}
               <button
-                key={g.id}
                 type="button"
-                title={g.name}
-                aria-label={`Gradient ${g.name}`}
-                aria-pressed={g.id === gradient.id}
-                onClick={() => onGradient(g)}
-                style={{ backgroundImage: toCss(g) }}
-                className={`size-8 shrink-0 rounded-full shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_0_0_0.5px_rgba(0,0,0,0.15)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_0_0_0.5px_rgba(255,255,255,0.1)] transition active:scale-90 ${
-                  g.ios && !GRADIENTS[i - 1]?.ios ? "ml-3" : ""
-                } ${
-                  g.id === gradient.id
+                title="Custom"
+                aria-label="Custom gradient"
+                aria-pressed={!!gradient.custom}
+                onClick={() => updateCustom(custom)}
+                style={{
+                  backgroundImage: gradient.custom
+                    ? toCss(gradient)
+                    : "conic-gradient(from 0deg, #ff4d4d, #ffb84d, #f2f24d, #4dff88, #4dc3ff, #8a4dff, #ff4de1, #ff4d4d)",
+                }}
+                className={`grid size-8 shrink-0 place-items-center rounded-full text-[18px] font-bold leading-none text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_0_0_0.5px_rgba(0,0,0,0.15)] transition active:scale-90 ${
+                  gradient.custom
                     ? "outline-2 outline-offset-2 outline-ink"
                     : ""
                 }`}
-              />
-            ))}
+              >
+                {gradient.custom ? "" : "+"}
+              </button>
+            </div>
+            {gradient.custom && (
+              <div className="flex items-center justify-between gap-3 border-t border-gray-200 pt-3 dark:border-border">
+                {[
+                  ["Top", 0],
+                  ["Bottom", 1],
+                ].map(([label, idx]) => (
+                  <label
+                    key={label}
+                    className="flex items-center gap-2 text-[12px] font-medium text-ink/70"
+                  >
+                    {label}
+                    <input
+                      type="color"
+                      value={custom[idx]}
+                      aria-label={`${label} color`}
+                      onChange={(e) => {
+                        const next = [...custom];
+                        next[idx] = e.target.value;
+                        updateCustom(next);
+                      }}
+                      className="size-8 cursor-pointer rounded-full border-0 bg-transparent p-0 [&::-moz-color-swatch]:rounded-full [&::-moz-color-swatch]:border-0 [&::-webkit-color-swatch]:rounded-full [&::-webkit-color-swatch]:border-0 [&::-webkit-color-swatch-wrapper]:p-0"
+                    />
+                  </label>
+                ))}
+                <button
+                  type="button"
+                  title="Swap colors"
+                  aria-label="Swap colors"
+                  onClick={() => updateCustom([custom[1], custom[0]])}
+                  className="grid size-8 place-items-center rounded-full text-[16px] text-ink/70 transition hover:bg-white/60 active:scale-90 dark:hover:bg-white/10"
+                >
+                  ⇅
+                </button>
+              </div>
+            )}
           </div>
         )}
         {panel === "decor" && (

@@ -204,7 +204,106 @@ export const GRADIENTS = [
       [1, "#cfd2d8"],
     ],
   },
+  // --- Bold set: punchy, high-contrast gradients picked to look good as a PFP ---
+  {
+    id: "vice",
+    name: "Vice",
+    angle: 155,
+    stops: [
+      [0, "#ff7ac6"],
+      [0.55, "#c13bdc"],
+      [1, "#4f1fd1"],
+    ],
+  },
+  {
+    id: "electric",
+    name: "Electric",
+    angle: 160,
+    stops: [
+      [0, "#22d3ee"],
+      [0.5, "#3b6cf5"],
+      [1, "#3b1fa8"],
+    ],
+  },
+  {
+    id: "lava",
+    name: "Lava",
+    angle: 150,
+    stops: [
+      [0, "#ff8a1f"],
+      [0.5, "#ff2d55"],
+      [1, "#8b1d6e"],
+    ],
+  },
+  {
+    id: "nebula",
+    name: "Nebula",
+    angle: 165,
+    stops: [
+      [0, "#a855f7"],
+      [0.5, "#5b2bb8"],
+      [1, "#14123d"],
+    ],
+  },
+  {
+    id: "bubblegum",
+    name: "Bubblegum",
+    angle: 135,
+    stops: [
+      [0, "#f472b6"],
+      [1, "#5b8def"],
+    ],
+  },
+  {
+    id: "crimson-noir",
+    name: "Crimson Noir",
+    angle: 170,
+    stops: [
+      [0, "#ef4444"],
+      [0.55, "#9b1c2c"],
+      [1, "#2a0508"],
+    ],
+  },
+  {
+    id: "deep-sea",
+    name: "Deep Sea",
+    angle: 165,
+    stops: [
+      [0, "#2dd4bf"],
+      [0.5, "#1d7fb8"],
+      [1, "#14275e"],
+    ],
+  },
 ];
+
+const HEX_RE = /^#[0-9a-f]{6}$/i;
+
+// Perceived brightness (0-1) of a #rrggbb color
+const luma = (hex) => {
+  const n = parseInt(hex.slice(1), 16);
+  return (
+    (0.299 * ((n >> 16) & 255) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255)) /
+    255
+  );
+};
+
+/** Builds a user-picked 2-color gradient. The letter turns dark automatically on light colors. */
+export function makeCustomGradient(top, bottom, angle = 170) {
+  const a = HEX_RE.test(top) ? top : "#ff8a5c";
+  const b = HEX_RE.test(bottom) ? bottom : "#6a2cff";
+  const light = (luma(a) + luma(b)) / 2 > 0.62;
+  return {
+    id: `custom-${a.slice(1)}-${b.slice(1)}`,
+    name: "Custom",
+    custom: true,
+    angle,
+    ...(light ? { ink: "#1c1c1e" } : {}),
+    stops: [
+      [0, a],
+      [1, b],
+    ],
+  };
+}
 
 export const toCss = (g) =>
   `linear-gradient(${g.angle}deg, ${g.stops
