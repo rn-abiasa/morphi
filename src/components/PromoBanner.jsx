@@ -43,12 +43,12 @@ export default function PromoBanner() {
       onMouseLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}
       onBlur={() => setPaused(false)}
-      className="group relative isolate block h-[76px] w-52 mt-10 overflow-hidden rounded-[20px] shadow-[0_0_0_0.5px_rgba(0,0,0,0.1),0_8px_24px_-12px_rgba(0,0,0,0.35)] transition active:scale-[0.985]"
+      className="group relative isolate block h-[76px] w-52 mt-10 overflow-hidden rounded-[20px] transition active:scale-[0.985]"
     >
       {/* Images are stacked; only the active one has opacity 1 */}
       <div
         aria-hidden="true"
-        style={{ backgroundImage: "linear-gradient(120deg, #ff8fb0, #ffb86b)" }}
+        // style={{ backgroundImage: "linear-gradient(120deg, #ff8fb0, #ffb86b)" }}
         className="absolute inset-0 -z-20 transition-transform duration-500 ease-out group-hover:scale-105"
       >
         {images.map((src, n) => (
@@ -64,7 +64,7 @@ export default function PromoBanner() {
       {/* Dark scrim behind the text for contrast on any image */}
       <div
         aria-hidden="true"
-        className="absolute inset-0 -z-10 bg-linear-to-r from-black/70 dark:from-black/90 via-black/35 dark:via-black/60 to-transparent"
+        className="absolute inset-0 -z-10 bg-linear-to-r from-gray-500 to-transparent backdrop-blur-xl"
       />
       <div className="flex h-full items-center justify-between gap-3 pl-4 pr-3.5 text-white">
         <div className="min-w-0">

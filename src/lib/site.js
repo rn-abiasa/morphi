@@ -1,8 +1,8 @@
 // Site config. Everything here ships in the client bundle, so no secrets
 // (those stay in server env, e.g. DISCORD_WEBHOOK_URL).
 
-import mvg01 from "../assets/2.webp";
-import mvg02 from "../assets/mvg-02.webp";
+import bgOne from "../assets/1.webp";
+import bgTwo from "../assets/2.webp";
 
 export const APP_NAME = "Morpli PFP";
 export const COPYRIGHT_OWNER = "Morpli";
@@ -15,8 +15,8 @@ export const TIKTOK_URL = "https://tiktok.com/@_abiasa";
 // `images`: imports from src/assets, crossfaded every `interval` ms when there are several.
 // Recommended 720x152 (~4.7:1); keep the left side uncluttered since the text overlays it.
 export const PROMO = {
-  url: "",
-  images: [mvg01],
+  url: "d",
+  images: [bgOne, bgTwo],
   interval: 4500,
   title: "Join Discord ✨",
   text: "Join to get updates.",
