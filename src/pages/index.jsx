@@ -114,7 +114,7 @@ export default function Index() {
 
     await saveCanvas(canvas, name);
     // Discord notification: fire-and-forget, a failure must not block the download
-    fetch("https://morpli.vercel.app/api/download", {
+    fetch("https://morpliauthor.vercel.app/api/download", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(info),
