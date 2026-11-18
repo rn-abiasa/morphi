@@ -14,25 +14,22 @@ export async function GET() {
 
   try {
     const db = await getDb();
-    const downloads = db.collection("downloads");
 
-    const now = new Date();
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    // The real numbers live in one document in the "stats" collection
+    const data = await db.collection("stats").findOne({ pin: "morpli_stats" });
 
-    const totalDownloads = await downloads.countDocuments();
-
-    // A user = one unique userId
-    const users = await downloads.distinct("userId");
-    const monthlyUsers = await downloads.distinct("userId", {
-      createdAt: { $gte: startOfMonth },
-    });
+    // monthlyUsers is a list like [{ month: "2026-10", count: 18000 }]
+    const month = new Date().toISOString().slice(0, 7);
+    const thisMonth = (data?.monthlyUsers || []).find(
+      (item) => item.month === month,
+    );
 
     return NextResponse.json({
       success: true,
       stats: {
-        totalDownloads,
-        monthlyUsers: monthlyUsers.length,
-        totalUsers: users.length,
+        totalDownloads: data?.totalDownloads || 0,
+        monthlyUsers: thisMonth ? thisMonth.count : 0,
+        totalUsers: data?.totalUsers || 0,
       },
     });
   } catch (err) {

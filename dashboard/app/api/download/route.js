@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { createHash } from "crypto";
 import { getDb } from "@/lib/mongodb";
 
 // The PFP site (Vite) runs on another origin, so CORS is needed.
@@ -20,17 +19,6 @@ export async function POST(req) {
   try {
     const body = await req.json();
 
-    // A user = a unique visitor. The PFP site does not send an id (yet),
-    // so we make one from the ip + browser. Only the hash is saved, not the ip.
-    const ip = req.headers.get("x-forwarded-for") || "unknown";
-    const agent = req.headers.get("user-agent") || "unknown";
-    const userId =
-      String(body.userId || "").slice(0, 50) ||
-      createHash("sha256")
-        .update(ip + agent)
-        .digest("hex")
-        .slice(0, 16);
-
     // Only keep the fields we need, and cut the length (this endpoint is public)
     const download = {
       letter: String(body.letter || "").slice(0, 10),
@@ -39,12 +27,35 @@ export async function POST(req) {
       decor: Number(body.decor) || 0,
       from: String(body.from || "Unknown").slice(0, 50),
       device: String(body.device || "Unknown").slice(0, 30),
-      userId,
       createdAt: new Date(),
     };
 
     const db = await getDb();
     await db.collection("downloads").insertOne(download);
+
+    // Update the counters in the "stats" document
+    const stats = db.collection("stats");
+    const month = new Date().toISOString().slice(0, 7);
+
+    await stats.updateOne(
+      { pin: "morpli_stats" },
+      { $inc: { totalDownloads: 1, totalUsers: 1 } },
+      { upsert: true },
+    );
+
+    // monthlyUsers is a list like [{ month: "2026-10", count: 18000 }]
+    const updated = await stats.updateOne(
+      { pin: "morpli_stats", "monthlyUsers.month": month },
+      { $inc: { "monthlyUsers.$.count": 1 } },
+    );
+
+    // First download of a new month: add the month to the list
+    if (updated.matchedCount === 0) {
+      await stats.updateOne(
+        { pin: "morpli_stats" },
+        { $push: { monthlyUsers: { month, count: 1 } } },
+      );
+    }
 
     return NextResponse.json({ success: true }, { headers: corsHeaders });
   } catch (err) {
