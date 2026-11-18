@@ -15,7 +15,7 @@ export const TIKTOK_URL = "https://tiktok.com/@_abiasa";
 // `images`: imports from src/assets, crossfaded every `interval` ms when there are several.
 // Recommended 720x152 (~4.7:1); keep the left side uncluttered since the text overlays it.
 export const PROMO = {
-  url: "https://discord.gg/Ct8r9j5a9",
+  url: "",
   images: [mvg01],
   interval: 4500,
   title: "Join Discord ✨",

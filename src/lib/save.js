@@ -1,5 +1,5 @@
 // HD export size, canvas -> PNG download, and a short hash for file names
-export const HD_SIZE = 4028;
+export const HD_SIZE = 1000;
 
 // Downloads the canvas as PNG; resolves once the download is triggered
 export const saveCanvas = (canvas, name) =>

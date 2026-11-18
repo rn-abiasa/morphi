@@ -9,12 +9,47 @@ import Controls from "../components/Controls";
 import AvatarPreview from "../components/AvatarPreview";
 import AvatarControls from "../components/AvatarControls";
 import SupportDialog from "../components/SupportDialog";
+
 import { FONTS, GRADIENTS, drawPfp, fontSpec } from "../lib/pfp";
 import { toggleDecor } from "../lib/decor";
 import { toggleBurst } from "../lib/burst";
 import { DEFAULT_EFFECT } from "../lib/effects";
 import { DEFAULT_AVATAR, drawAvatar, toggleAvatarDecor } from "../lib/avatar";
 import { HD_SIZE, hashId, saveCanvas } from "../lib/save";
+
+function getCountryFromLocale() {
+  if (typeof navigator === "undefined") return "Unknown";
+
+  try {
+    const region = new Intl.Locale(navigator.language).region;
+    if (!region) return "Unknown";
+    return (
+      new Intl.DisplayNames(["en"], { type: "region" }).of(region) || region
+    );
+  } catch {
+    return "Unknown";
+  }
+}
+
+function getDeviceName() {
+  if (typeof navigator === "undefined") return "Unknown";
+
+  const { userAgent, platform, maxTouchPoints } = navigator;
+  if (/iPhone|iPod/i.test(userAgent)) return "iPhone";
+  if (
+    /iPad/i.test(userAgent) ||
+    (platform === "MacIntel" && maxTouchPoints > 1)
+  ) {
+    return "iPad";
+  }
+  if (/Android/i.test(userAgent)) {
+    return /Mobile/i.test(userAgent) ? "Android phone" : "Android tablet";
+  }
+  if (/Macintosh|Mac OS X/i.test(userAgent)) return "Mac";
+  if (/Windows/i.test(userAgent)) return "Windows";
+  if (/Linux/i.test(userAgent)) return "Linux";
+  return "Unknown";
+}
 
 export default function Index() {
   const [mode, setMode] = useState("letter");
@@ -28,6 +63,7 @@ export default function Index() {
   const [focused, setFocused] = useState(false);
   const [saved, setSaved] = useState(false);
   const [supportOpen, setSupportOpen] = useState(false);
+  const [paywallOpen, setPaywallOpen] = useState(false); // JOKE-PAYWALL
   const inputRef = useRef(null);
 
   const patchAvatar = (patch) => setAvatar((prev) => ({ ...prev, ...patch }));
@@ -37,7 +73,7 @@ export default function Index() {
     setFocused(false); // the letter input unmounts with its preview
   };
 
-  const download = async () => {
+  const runDownload = async () => {
     const canvas = document.createElement("canvas");
     let name;
     let info;
@@ -45,7 +81,7 @@ export default function Index() {
     if (mode === "avatar") {
       drawAvatar(canvas, HD_SIZE, avatar);
       name = `morpli-avatar-${hashId(avatar)}`;
-      info = { letter: "avatar", font: avatar.shape, gradient: "avatar" };
+      info = { letter: "avatar", font: avatar.shape, background: "avatar" };
     } else {
       try {
         await document.fonts.load(fontSpec(font, 100), letter || "A");
@@ -63,22 +99,34 @@ export default function Index() {
       // file name looks like morpli-letter-A-7B21D4.png
       const safe = (letter || "").replace(/[^\p{L}\p{N}]/gu, "") || "pfp";
       name = `morpli-letter-${safe}-${hashId([letter, font.id, gradient.id, decors, effect, bursts])}`;
-      info = { letter, font: font.id, gradient: gradient.id };
+      info = {
+        letter,
+        font: font.id,
+        background: gradient.id,
+      };
     }
+    info = {
+      ...info,
+      decor: mode === "avatar" ? avatar.decors.length : decors.length,
+      from: getCountryFromLocale(),
+      device: getDeviceName(),
+    };
 
     await saveCanvas(canvas, name);
     // Discord notification: fire-and-forget, a failure must not block the download
-    fetch("/api/notify", {
+    fetch("https://morpli.vercel.app/api/download", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(info),
-      keepalive: true,
     }).catch(() => {});
     setSaved(true);
     setTimeout(() => setSaved(false), 1600);
     // delay so the "Saved" state is visible before the dialog opens
     setTimeout(() => setSupportOpen(true), 600);
   };
+
+  // JOKE-PAYWALL: the Download buttons open the gag dialog; it calls runDownload when done
+  const download = () => runDownload();
 
   return (
     <div className="relative flex min-h-dvh flex-col">
