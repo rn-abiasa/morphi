@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { DECORS, PALETTES, SHAPES, SWATCHES } from "../lib/avatar";
+import { PATTERNS, patternInk, patternShapes } from "../lib/patterns";
 import { ToolButton } from "./Controls";
 import {
   BackdropIcon,
@@ -55,14 +56,11 @@ function MiniAvatar({ bg, figure, shape }) {
   );
 }
 
-function SwatchPanel({ label, value, onPick }) {
+// Color dots plus a custom picker, laid out by the 8-column grid of the panel that renders them
+function Swatches({ label, value, onPick }) {
   const isCustom = !SWATCHES.includes(value.toLowerCase());
   return (
-    <div
-      className={`${PANEL} grid h-28 grid-cols-8 items-center gap-3 p-4`}
-      role="group"
-      aria-label={label}
-    >
+    <>
       {SWATCHES.map((c) => (
         <button
           key={c}
@@ -94,6 +92,94 @@ function SwatchPanel({ label, value, onPick }) {
           className="absolute inset-0 size-full opacity-0"
         />
       </label>
+    </>
+  );
+}
+
+function SwatchPanel({ label, value, onPick }) {
+  return (
+    <div
+      className={`${PANEL} grid h-28 grid-cols-8 items-center gap-3 p-4`}
+      role="group"
+      aria-label={label}
+    >
+      <Swatches label={label} value={value} onPick={onPick} />
+    </div>
+  );
+}
+
+// Square thumbnail of a pattern on the current background, from the same path data as the canvas
+function PatternThumb({ id, bg }) {
+  const ink = patternInk(bg);
+  return (
+    <svg viewBox="0 0 100 100" className="size-full" aria-hidden="true">
+      <rect width="100" height="100" fill={bg} />
+      {patternShapes(id).map((s, i) => (
+        <path
+          key={i}
+          d={s.d}
+          fill={s.fill ? ink : "none"}
+          stroke={s.stroke ? ink : "none"}
+          strokeWidth={s.w ?? 1.5}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          opacity={s.op ?? 1}
+        />
+      ))}
+      {id === "none" && (
+        <path
+          d="M32 68L68 32"
+          stroke="currentColor"
+          strokeWidth="5"
+          strokeLinecap="round"
+          opacity="0.4"
+        />
+      )}
+    </svg>
+  );
+}
+
+// Background color and pattern in one floating panel (taller than the other panels)
+function BackgroundPanel({ bg, pattern, onColor, onPattern }) {
+  const current = PATTERNS.find((p) => p.id === pattern) ?? PATTERNS[0];
+  return (
+    <div
+      role="group"
+      aria-label="Background"
+      className={`${PANEL} absolute left-1/2 top-0 z-30 flex w-[22rem] -translate-x-1/2 flex-col gap-4 p-4 text-ink shadow-xl`}
+    >
+      <div>
+        <p className="mb-3 text-[12px] font-semibold text-ink/70">Color</p>
+        <div className="grid grid-cols-8 justify-items-center gap-y-3">
+          <Swatches label="Background" value={bg} onPick={onColor} />
+        </div>
+      </div>
+      <div className="border-t border-gray-200 pt-4 dark:border-border">
+        <p className="mb-3 flex items-baseline justify-between text-[12px] font-semibold text-ink/70">
+          Patern
+          <span className="font-medium text-ink/50">{current.name}</span>
+        </p>
+        <div className="grid grid-cols-5 gap-2.5">
+          {PATTERNS.map((p) => {
+            const on = p.id === pattern;
+            return (
+              <button
+                key={p.id}
+                type="button"
+                title={p.name}
+                aria-label={`Patern ${p.name}`}
+                aria-pressed={on}
+                onClick={() => onPattern(p.id)}
+                className={`aspect-square overflow-hidden rounded-2xl transition active:scale-90 ${RING} ${
+                  on ? SELECTED : ""
+                }`}
+              >
+                <PatternThumb id={p.id} bg={bg} />
+              </button>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 }
@@ -161,7 +247,7 @@ export default function AvatarControls({
       </div>
 
       {/* Fixed height so the layout doesn't jump when a panel opens */}
-      <div className="flex h-12 w-full justify-center mb-5">
+      <div className="relative flex h-12 w-full justify-center mb-5">
         {panel === "palette" && (
           <div
             className={`${PANEL} flex h-24 items-center gap-2 overflow-x-auto p-3 [scrollbar-width:none]`}
@@ -187,10 +273,11 @@ export default function AvatarControls({
           </div>
         )}
         {panel === "bg" && (
-          <SwatchPanel
-            label="Background"
-            value={avatar.bg}
-            onPick={(bg) => onChange({ bg })}
+          <BackgroundPanel
+            bg={avatar.bg}
+            pattern={avatar.pattern}
+            onColor={(bg) => onChange({ bg })}
+            onPattern={(pattern) => onChange({ pattern })}
           />
         )}
         {panel === "figure" && (

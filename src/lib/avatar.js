@@ -1,4 +1,6 @@
-// Avatar PFP: a flat silhouette (head + shoulders) on a solid background.
+import { patternInk, patternShapes } from "./patterns";
+
+// Avatar PFP: a flat silhouette (head + shoulders) on a solid background (optionally patterned).
 // Everything is SVG path data in a 0 0 100 100 viewBox. The same data feeds the panel
 // previews (inline <svg>) and the canvas (Path2D), so output stays sharp at any export size.
 
@@ -15,19 +17,21 @@ export const SHAPES = [
     body: ell(50, 102, 36, 32),
     box: { cx: 50, cy: 44, rx: 20, ry: 20 },
   },
+  // Chibi: oversized round head, small rounded shoulders
   {
     id: "chibi",
     name: "Chibi",
-    head: ell(50, 46, 26, 25),
-    body: ell(50, 106, 22, 22),
-    box: { cx: 50, cy: 46, rx: 26, ry: 25 },
+    head: ell(50, 45, 25, 24),
+    body: ell(50, 107, 31, 33),
+    box: { cx: 50, cy: 45, rx: 25, ry: 24 },
   },
+  // Slim: tall narrow oval head over steep, sloped shoulders
   {
     id: "slim",
     name: "Slim",
-    head: ell(50, 42, 13, 17),
-    body: ell(50, 102, 19, 32),
-    box: { cx: 50, cy: 42, rx: 13, ry: 17 },
+    head: ell(50, 41, 15, 19),
+    body: "M25 104C25 86 33 66 50 66C67 66 75 86 75 104Z",
+    box: { cx: 50, cy: 41, rx: 15, ry: 19 },
   },
   {
     id: "egg",
@@ -36,12 +40,13 @@ export const SHAPES = [
     body: ell(50, 100, 26, 20),
     box: { cx: 50, cy: 45, rx: 18, ry: 23 },
   },
+  // Mini: the whole figure scaled down and set low, with air above the head
   {
     id: "mini",
     name: "Mini",
-    head: ell(50, 44, 13, 13),
-    body: ell(50, 100, 38, 26),
-    box: { cx: 50, cy: 44, rx: 13, ry: 13 },
+    head: ell(50, 55, 15, 15),
+    body: ell(50, 106, 27, 30),
+    box: { cx: 50, cy: 55, rx: 15, ry: 15 },
   },
   {
     id: "broad",
@@ -87,6 +92,7 @@ export const DEFAULT_AVATAR = {
   bg: PALETTES[1].bg,
   figure: PALETTES[1].figure,
   shape: "classic",
+  pattern: "none",
   decors: [],
 };
 
@@ -339,7 +345,36 @@ function drawDecor(ctx, k, decor, box, figure) {
   ctx.restore();
 }
 
-export function drawAvatar(canvas, size, { bg, figure, shape, decors = [] }) {
+// Tone-on-tone background pattern, drawn between the solid fill and the silhouette
+function drawPattern(ctx, k, id, bg) {
+  const shapes = patternShapes(id);
+  if (!shapes.length) return;
+  const ink = patternInk(bg);
+  ctx.save();
+  ctx.scale(k, k);
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+  shapes.forEach((s) => {
+    const p = pathOf(s.d);
+    ctx.globalAlpha = s.op ?? 1;
+    if (s.fill) {
+      ctx.fillStyle = ink;
+      ctx.fill(p);
+    }
+    if (s.stroke) {
+      ctx.strokeStyle = ink;
+      ctx.lineWidth = s.w ?? 1.5;
+      ctx.stroke(p);
+    }
+  });
+  ctx.restore();
+}
+
+export function drawAvatar(
+  canvas,
+  size,
+  { bg, figure, shape, pattern = "none", decors = [] },
+) {
   canvas.width = size;
   canvas.height = size;
   const ctx = canvas.getContext("2d");
@@ -349,6 +384,7 @@ export function drawAvatar(canvas, size, { bg, figure, shape, decors = [] }) {
 
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, size, size);
+  drawPattern(ctx, k, pattern, bg);
 
   list
     .filter((d) => d.behind)

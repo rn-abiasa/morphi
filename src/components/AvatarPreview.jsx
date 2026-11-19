@@ -4,14 +4,20 @@ import { drawAvatar } from "../lib/avatar";
 
 const PREVIEW_SIZE = 720;
 
-export default function AvatarPreview({ bg, figure, shape, decors }) {
+export default function AvatarPreview({ bg, figure, shape, pattern, decors }) {
   const canvasRef = useRef(null);
 
   useEffect(() => {
     if (canvasRef.current) {
-      drawAvatar(canvasRef.current, PREVIEW_SIZE, { bg, figure, shape, decors });
+      drawAvatar(canvasRef.current, PREVIEW_SIZE, {
+        bg,
+        figure,
+        shape,
+        pattern,
+        decors,
+      });
     }
-  }, [bg, figure, shape, decors]);
+  }, [bg, figure, shape, pattern, decors]);
 
   return (
     <Bezel>

@@ -177,6 +177,7 @@ export default function Index() {
               bg={avatar.bg}
               figure={avatar.figure}
               shape={avatar.shape}
+              pattern={avatar.pattern}
               decors={avatar.decors}
             />
             <AvatarControls
