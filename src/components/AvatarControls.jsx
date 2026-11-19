@@ -1,5 +1,12 @@
-import { useState } from "react";
-import { DECORS, PALETTES, SHAPES, SWATCHES } from "../lib/avatar";
+import { useEffect, useRef, useState } from "react";
+import {
+  DECORS,
+  PALETTES,
+  SHAPES,
+  SWATCHES,
+  drawAvatar,
+} from "../lib/avatar";
+import { SHADERS } from "../lib/shaders";
 import { PATTERNS, patternInk, patternShapes } from "../lib/patterns";
 import { ToolButton } from "./Controls";
 import {
@@ -96,18 +103,6 @@ function Swatches({ label, value, onPick }) {
   );
 }
 
-function SwatchPanel({ label, value, onPick }) {
-  return (
-    <div
-      className={`${PANEL} grid h-28 grid-cols-8 items-center gap-3 p-4`}
-      role="group"
-      aria-label={label}
-    >
-      <Swatches label={label} value={value} onPick={onPick} />
-    </div>
-  );
-}
-
 // Square thumbnail of a pattern on the current background, from the same path data as the canvas
 function PatternThumb({ id, bg }) {
   const ink = patternInk(bg);
@@ -179,6 +174,85 @@ function BackgroundPanel({ bg, pattern, onColor, onPattern }) {
             );
           })}
         </div>
+      </div>
+    </div>
+  );
+}
+
+// Thumbnail rendered by the real canvas renderer, so it shows exactly what the shader does
+function ShaderThumb({ id, avatar }) {
+  const ref = useRef(null);
+  useEffect(() => {
+    if (ref.current) {
+      drawAvatar(ref.current, 112, {
+        bg: avatar.bg,
+        figure: avatar.figure,
+        shape: avatar.shape,
+        shader: id,
+        shaderAmount: Math.max(avatar.shaderAmount, 40),
+      });
+    }
+  }, [id, avatar.bg, avatar.figure, avatar.shape, avatar.shaderAmount]);
+  return <canvas ref={ref} width={112} height={112} className="size-full" aria-hidden="true" />;
+}
+
+// Figure color and shader in one floating panel
+function FigurePanel({ avatar, onChange }) {
+  const current = SHADERS.find((s) => s.id === avatar.shader) ?? SHADERS[0];
+  return (
+    <div
+      role="group"
+      aria-label="Figure"
+      className={`${PANEL} absolute left-1/2 top-0 z-30 flex w-[22rem] -translate-x-1/2 flex-col gap-4 p-4 text-ink shadow-xl`}
+    >
+      <div>
+        <p className="mb-3 text-[12px] font-semibold text-ink/70">Color</p>
+        <div className="grid grid-cols-8 justify-items-center gap-y-3">
+          <Swatches
+            label="Figure"
+            value={avatar.figure}
+            onPick={(figure) => onChange({ figure })}
+          />
+        </div>
+      </div>
+      <div className="border-t border-gray-200 pt-4 dark:border-border">
+        <p className="mb-3 flex items-baseline justify-between text-[12px] font-semibold text-ink/70">
+          Shader
+          <span className="font-medium text-ink/50">{current.name}</span>
+        </p>
+        <div className="grid grid-cols-5 gap-2.5">
+          {SHADERS.map((s) => {
+            const on = s.id === avatar.shader;
+            return (
+              <button
+                key={s.id}
+                type="button"
+                title={s.name}
+                aria-label={`Shader ${s.name}`}
+                aria-pressed={on}
+                onClick={() => onChange({ shader: s.id })}
+                className={`aspect-square overflow-hidden rounded-2xl transition active:scale-90 ${RING} ${
+                  on ? SELECTED : ""
+                }`}
+              >
+                <ShaderThumb id={s.id} avatar={avatar} />
+              </button>
+            );
+          })}
+        </div>
+        <label className="mt-4 flex items-center gap-3 text-[12px] font-medium text-ink/60">
+          Amount
+          <input
+            type="range"
+            min={0}
+            max={100}
+            value={avatar.shaderAmount}
+            disabled={avatar.shader === "none"}
+            aria-label="Shader amount"
+            onChange={(e) => onChange({ shaderAmount: Number(e.target.value) })}
+            className="min-w-0 flex-1 accent-ink transition disabled:opacity-30"
+          />
+        </label>
       </div>
     </div>
   );
@@ -281,11 +355,7 @@ export default function AvatarControls({
           />
         )}
         {panel === "figure" && (
-          <SwatchPanel
-            label="Figure"
-            value={avatar.figure}
-            onPick={(figure) => onChange({ figure })}
-          />
+          <FigurePanel avatar={avatar} onChange={onChange} />
         )}
         {panel === "shape" && (
           <div

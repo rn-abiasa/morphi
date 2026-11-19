@@ -1,4 +1,5 @@
 import { patternInk, patternShapes } from "./patterns";
+import { DEFAULT_SHADER_AMOUNT, renderFigure } from "./shaders";
 
 // Avatar PFP: a flat silhouette (head + shoulders) on a solid background (optionally patterned).
 // Everything is SVG path data in a 0 0 100 100 viewBox. The same data feeds the panel
@@ -93,6 +94,8 @@ export const DEFAULT_AVATAR = {
   figure: PALETTES[1].figure,
   shape: "classic",
   pattern: "none",
+  shader: "none",
+  shaderAmount: DEFAULT_SHADER_AMOUNT,
   decors: [],
 };
 
@@ -373,7 +376,15 @@ function drawPattern(ctx, k, id, bg) {
 export function drawAvatar(
   canvas,
   size,
-  { bg, figure, shape, pattern = "none", decors = [] },
+  {
+    bg,
+    figure,
+    shape,
+    pattern = "none",
+    shader = "none",
+    shaderAmount = DEFAULT_SHADER_AMOUNT,
+    decors = [],
+  },
 ) {
   canvas.width = size;
   canvas.height = size;
@@ -390,12 +401,14 @@ export function drawAvatar(
     .filter((d) => d.behind)
     .forEach((d) => drawDecor(ctx, k, d, sh.box, figure));
 
-  ctx.save();
-  ctx.scale(k, k);
-  ctx.fillStyle = figure;
-  ctx.fill(pathOf(sh.body));
-  ctx.fill(pathOf(sh.head));
-  ctx.restore();
+  renderFigure(
+    ctx,
+    size,
+    { paths: [pathOf(sh.body), pathOf(sh.head)], box: sh.box },
+    figure,
+    shader,
+    shaderAmount,
+  );
 
   list
     .filter((d) => !d.behind)

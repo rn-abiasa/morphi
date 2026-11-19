@@ -218,7 +218,7 @@ export function patternShapes(id) {
   return cache.get(id);
 }
 
-const hexToRgb = (hex) => {
+export const hexToRgb = (hex) => {
   let h = hex.replace("#", "");
   if (h.length === 3) h = [...h].map((c) => c + c).join("");
   const n = parseInt(h, 16);

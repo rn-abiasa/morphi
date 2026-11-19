@@ -178,6 +178,8 @@ export default function Index() {
               figure={avatar.figure}
               shape={avatar.shape}
               pattern={avatar.pattern}
+              shader={avatar.shader}
+              shaderAmount={avatar.shaderAmount}
               decors={avatar.decors}
             />
             <AvatarControls
