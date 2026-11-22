@@ -128,7 +128,7 @@ export default function Index() {
       <title>{`Morpli | ${mode === "avatar" ? "Avatar" : "Letter"} PFP maker`}</title>
       <div
         aria-hidden="true"
-        className="dots pointer-events-none fixed inset-0 -z-10"
+        className="pointer-events-none fixed inset-0 -z-10"
       />
       <Navbar />
       <main className="flex flex-1 flex-col items-center justify-center gap-7 px-5 py-6">

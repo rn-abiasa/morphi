@@ -1,4 +1,4 @@
-import { Sun, SunDim, Moon } from "lucide-react";
+import { SunDim, Moon } from "lucide-react";
 import { useTheme } from "../hooks/useTheme";
 
 // Pinned to the top-right corner, outside the navbar so the navbar stays centered.

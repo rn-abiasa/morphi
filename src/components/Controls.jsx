@@ -205,8 +205,8 @@ export default function Controls({
           </div>
         )}
         {panel === "gradient" && (
-          <div className="bg-gray-50 border border-gray-200 absolute top-0 left-1/2 z-30 flex w-max max-w-full -translate-x-1/2 flex-col gap-3 rounded-3xl p-4 shadow-xl dark:bg-surface dark:border-border">
-            <div className="grid grid-cols-7 items-center gap-3">
+          <div className="bg-gray-50 border border-gray-200 absolute top-0 left-1/2 z-30 flex w-max max-w-full max-h-32 overflow-scroll -translate-x-1/2 flex-col gap-3 rounded-3xl p-4 dark:bg-surface dark:border-border">
+            <div className="grid grid-cols-4 items-center gap-3">
               {GRADIENTS.map((g) => (
                 <button
                   key={g.id}
@@ -216,7 +216,7 @@ export default function Controls({
                   aria-pressed={g.id === gradient.id}
                   onClick={() => onGradient(g)}
                   style={{ backgroundImage: toCss(g) }}
-                  className={`size-8 shrink-0 rounded-full shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_0_0_0.5px_rgba(0,0,0,0.15)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_0_0_0.5px_rgba(255,255,255,0.1)] transition active:scale-90 ${
+                  className={`size-10 shrink-0 rounded-full shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_0_0_0.5px_rgba(0,0,0,0.15)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_0_0_0.5px_rgba(255,255,255,0.1)] transition active:scale-90 ${
                     g.id === gradient.id
                       ? "outline-2 outline-offset-2 outline-ink"
                       : ""
