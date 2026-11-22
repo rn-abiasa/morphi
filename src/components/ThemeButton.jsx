@@ -13,7 +13,7 @@ export default function ThemeButton() {
       onClick={toggleTheme}
       aria-label="Toggle theme"
       title="Toggle theme"
-      className="grid size-11 place-items-center rounded-full border border-gray-200 bg-gray-50 text-ink/70 transition hover:text-ink active:scale-90 dark:border-border dark:bg-surface"
+      className="grid size-8 place-items-center rounded-full border border-gray-200 bg-gray-50 text-ink/70 transition hover:text-ink active:scale-90 dark:border-border dark:bg-surface"
     >
       <Icon size={16} />
     </button>

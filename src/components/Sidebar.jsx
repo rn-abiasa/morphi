@@ -42,7 +42,7 @@ const GROUPS = [
   .filter((g) => g.items.length > 0);
 
 const roundButton =
-  "grid size-11 place-items-center rounded-full border border-gray-200 bg-gray-50 text-ink/70 transition hover:text-ink active:scale-90 dark:border-border dark:bg-surface";
+  "grid size-8 place-items-center rounded-full border border-gray-200 bg-gray-50 text-ink/70 transition hover:text-ink active:scale-90 dark:border-border dark:bg-surface";
 
 // Sits in the left slot of the navbar, same size as the theme button
 export function SidebarButton({ open, onClick }) {
