@@ -1,13 +1,8 @@
 import { useRef, useState } from "react";
 import Navbar from "../components/Navbar";
-import ThemeButton from "../components/ThemeButton";
-import ModeTabs from "../components/ModeTabs";
-import PromoBanner from "../components/PromoBanner";
 import Footer from "../components/Footer";
 import PfpPreview from "../components/PfpPreview";
 import Controls from "../components/Controls";
-import AvatarPreview from "../components/AvatarPreview";
-import AvatarControls from "../components/AvatarControls";
 import SupportDialog from "../components/SupportDialog";
 
 import { FONTS, GRADIENTS, drawPfp, fontSpec } from "../lib/pfp";
@@ -136,65 +131,36 @@ export default function Index() {
         className="dots pointer-events-none fixed inset-0 -z-10"
       />
       <Navbar />
-      <ThemeButton />
       <main className="flex flex-1 flex-col items-center justify-center gap-7 px-5 py-6">
-        <ModeTabs mode={mode} onChange={changeMode} />
-        {mode === "letter" ? (
-          <>
-            <PfpPreview
-              letter={letter}
-              font={font}
-              gradient={gradient}
-              decors={decors}
-              effect={effect}
-              bursts={bursts}
-              inputRef={inputRef}
-              onLetterChange={setLetter}
-              onFocusChange={setFocused}
-            />
-            <Controls
-              font={font}
-              gradient={gradient}
-              decors={decors}
-              effect={effect}
-              bursts={bursts}
-              letterFocused={focused}
-              saved={saved}
-              onFocusLetter={() => inputRef.current?.focus()}
-              onFont={setFont}
-              onGradient={setGradient}
-              onDecor={(id) => setDecors((prev) => toggleDecor(prev, id))}
-              onClearDecor={() => setDecors([])}
-              onEffect={setEffect}
-              onBurst={(id) => setBursts((prev) => toggleBurst(prev, id))}
-              onClearBurst={() => setBursts([])}
-              onDownload={download}
-            />
-          </>
-        ) : (
-          <>
-            <AvatarPreview
-              bg={avatar.bg}
-              figure={avatar.figure}
-              shape={avatar.shape}
-              pattern={avatar.pattern}
-              shader={avatar.shader}
-              shaderAmount={avatar.shaderAmount}
-              decors={avatar.decors}
-            />
-            <AvatarControls
-              avatar={avatar}
-              saved={saved}
-              onChange={patchAvatar}
-              onToggleDecor={(id) =>
-                patchAvatar({ decors: toggleAvatarDecor(avatar.decors, id) })
-              }
-              onClearDecor={() => patchAvatar({ decors: [] })}
-              onDownload={download}
-            />
-          </>
-        )}
-        <PromoBanner />
+        <PfpPreview
+          letter={letter}
+          font={font}
+          gradient={gradient}
+          decors={decors}
+          effect={effect}
+          bursts={bursts}
+          inputRef={inputRef}
+          onLetterChange={setLetter}
+          onFocusChange={setFocused}
+        />
+        <Controls
+          font={font}
+          gradient={gradient}
+          decors={decors}
+          effect={effect}
+          bursts={bursts}
+          letterFocused={focused}
+          saved={saved}
+          onFocusLetter={() => inputRef.current?.focus()}
+          onFont={setFont}
+          onGradient={setGradient}
+          onDecor={(id) => setDecors((prev) => toggleDecor(prev, id))}
+          onClearDecor={() => setDecors([])}
+          onEffect={setEffect}
+          onBurst={(id) => setBursts((prev) => toggleBurst(prev, id))}
+          onClearBurst={() => setBursts([])}
+          onDownload={download}
+        />
       </main>
       <Footer />
       <SupportDialog open={supportOpen} onClose={() => setSupportOpen(false)} />
