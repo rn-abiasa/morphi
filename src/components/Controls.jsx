@@ -4,21 +4,29 @@ import { DECORS } from "../lib/decor";
 import { EFFECTS } from "../lib/effects";
 import { BURSTS } from "../lib/burst";
 import {
-  BurstIcon,
-  CheckIcon,
-  CloseIcon,
-  DownloadIcon,
-  EffectIcon,
-  FontIcon,
-  GradientIcon,
-  SparkleIcon,
-  TypeIcon,
-} from "./Icons";
+  Aperture,
+  CaseSensitive,
+  Check,
+  Download,
+  Sparkles,
+  Type,
+  Zap,
+} from "lucide-react";
+import { CloseIcon } from "./Icons";
+
+// Tools shown in the toolbar. Add "decor", "effect" or "burst" to bring them back;
+// their buttons and panels are still wired up below.
+const ENABLED_TOOLS = ["letter", "font", "gradient", "download"];
+const ICON_PROPS = { size: 18, strokeWidth: 1.8, "aria-hidden": true };
 
 // Renders a burst sticker's shapes with the same data the canvas uses
 function BurstSvg({ burst }) {
   return (
-    <svg viewBox="0 0 100 100" className="size-full overflow-visible" aria-hidden="true">
+    <svg
+      viewBox="0 0 100 100"
+      className="size-full overflow-visible"
+      aria-hidden="true"
+    >
       {burst.shapes.map((s, i) => (
         <path
           key={i}
@@ -43,11 +51,12 @@ export function ToolButton({
   onClick,
   children,
 }) {
+  // Every button is its own round chip (border + background), not part of a shared pill
   const tone = primary
-    ? "bg-ink text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25)] hover:bg-black dark:bg-surface dark:text-white dark:hover:bg-white/10"
+    ? "border-ink bg-ink text-paper hover:bg-black dark:border-border dark:bg-surface dark:text-white dark:hover:bg-white/10"
     : active
-      ? "bg-black/90 text-ink shadow-[inset_0_1px_0_#fff,0_1px_4px_rgba(0,0,0,0.12)] dark:bg-white/10 dark:shadow-[inset_0_1px_0_#fff,0_1px_4px_rgba(255,255,255,0.05)]"
-      : "text-ink/65 hover:bg-white/50 hover:text-ink dark:hover:bg-white/10";
+      ? "border-ink bg-white text-ink shadow-sm dark:border-white/40 dark:bg-white/10"
+      : "border-gray-200 bg-gray-50 text-ink/65 hover:text-ink dark:border-border dark:bg-surface dark:hover:bg-white/10";
   return (
     <button
       type="button"
@@ -56,7 +65,7 @@ export function ToolButton({
       aria-pressed={primary ? undefined : !!active}
       onClick={onClick}
       disabled={disabled}
-      className={`grid ${compact ? "size-9" : "size-10"} place-items-center rounded-full transition duration-200 active:scale-90 disabled:pointer-events-none disabled:opacity-30`}
+      className={`grid ${compact ? "size-9" : "size-10"} place-items-center rounded-full border ${tone} transition duration-200 active:scale-90 disabled:pointer-events-none disabled:opacity-30`}
     >
       {children}
     </button>
@@ -84,6 +93,7 @@ export default function Controls({
   const [panel, setPanel] = useState(null);
   const [custom, setCustom] = useState(["#ff8a5c", "#6a2cff"]);
   const toggle = (id) => setPanel((p) => (p === id ? null : id));
+  const on = (id) => ENABLED_TOOLS.includes(id);
 
   const updateCustom = (next) => {
     setCustom(next);
@@ -95,60 +105,79 @@ export default function Controls({
       <div
         role="toolbar"
         aria-label="PFP tools"
-        className="bg-gray-50 border border-gray-200 flex items-center gap-0.5 rounded-full p-1 dark:bg-surface dark:border-border"
+        className="flex items-center gap-2"
       >
-        <ToolButton
-          label="Letter"
-          active={letterFocused}
-          onClick={() => {
-            setPanel(null);
-            onFocusLetter();
-          }}
-        >
-          <TypeIcon />
-        </ToolButton>
-        <ToolButton
-          label="Font"
-          active={panel === "font"}
-          onClick={() => toggle("font")}
-        >
-          <FontIcon />
-        </ToolButton>
-        <ToolButton
-          label="Gradient"
-          active={panel === "gradient"}
-          onClick={() => toggle("gradient")}
-        >
-          <GradientIcon />
-        </ToolButton>
-        <ToolButton
-          label="Decor"
-          active={panel === "decor"}
-          onClick={() => toggle("decor")}
-        >
-          <SparkleIcon />
-        </ToolButton>
-        <ToolButton
-          label="Effect"
-          active={panel === "effect"}
-          onClick={() => toggle("effect")}
-        >
-          <EffectIcon />
-        </ToolButton>
-        <ToolButton
-          label="Burst"
-          active={panel === "burst"}
-          onClick={() => toggle("burst")}
-        >
-          <BurstIcon />
-        </ToolButton>
-        <ToolButton
-          label={saved ? "Saved" : "Download HD"}
-          primary
-          onClick={onDownload}
-        >
-          {saved ? <CheckIcon /> : <DownloadIcon />}
-        </ToolButton>
+        {on("letter") && (
+          <ToolButton
+            label="Letter"
+            active={letterFocused}
+            onClick={() => {
+              setPanel(null);
+              onFocusLetter();
+            }}
+          >
+            <Type {...ICON_PROPS} />
+          </ToolButton>
+        )}
+        {on("font") && (
+          <ToolButton
+            label="Font"
+            active={panel === "font"}
+            onClick={() => toggle("font")}
+          >
+            <CaseSensitive {...ICON_PROPS} />
+          </ToolButton>
+        )}
+        {on("gradient") && (
+          <ToolButton
+            label="Background"
+            active={panel === "gradient"}
+            onClick={() => toggle("gradient")}
+          >
+            {/* Small round preview of the gradient that is active right now */}
+            <span
+              aria-hidden="true"
+              style={{ backgroundImage: toCss(gradient) }}
+              className="size-5 rounded-full shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_0_0_0.5px_rgba(0,0,0,0.15)] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.2),0_0_0_0.5px_rgba(255,255,255,0.1)]"
+            />
+          </ToolButton>
+        )}
+        {on("decor") && (
+          <ToolButton
+            label="Decor"
+            active={panel === "decor"}
+            onClick={() => toggle("decor")}
+          >
+            <Sparkles {...ICON_PROPS} />
+          </ToolButton>
+        )}
+        {on("effect") && (
+          <ToolButton
+            label="Effect"
+            active={panel === "effect"}
+            onClick={() => toggle("effect")}
+          >
+            <Aperture {...ICON_PROPS} />
+          </ToolButton>
+        )}
+        {on("burst") && (
+          <ToolButton
+            label="Burst"
+            active={panel === "burst"}
+            onClick={() => toggle("burst")}
+          >
+            <Zap {...ICON_PROPS} />
+          </ToolButton>
+        )}
+        {on("download") && (
+          <ToolButton
+            label={saved ? "Saved" : "Download HD"}
+            primary
+            onClick={onDownload}
+          >
+            {saved ? <Check {...ICON_PROPS} /> : <Download {...ICON_PROPS} />}
+          </ToolButton>
+        )}
       </div>
 
       {/* Fixed height so the layout doesn't jump when a panel opens */}
