@@ -13,7 +13,11 @@ const GROUPS = [
     title: "Links",
     items: [
       { label: "Website", href: "https://rehanabiasa.vercel.app", icon: Globe },
-      { label: "Donate", href: "https://saweria.co/morpli", icon: Heart },
+      {
+        label: "Buy me a coffee",
+        href: "https://saweria.co/morpli",
+        icon: Heart,
+      },
     ],
   },
   {
