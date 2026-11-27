@@ -12,7 +12,7 @@ const GROUPS = [
   {
     title: "Links",
     items: [
-      { label: "Website", href: "https://rehanabiasa.vercel.app", icon: Globe },
+      { label: "Website", href: "https://rnabiasa.vercel.app", icon: Globe },
       {
         label: "Buy me a coffee",
         href: "https://saweria.co/morpli",
