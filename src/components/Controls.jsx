@@ -8,7 +8,7 @@ import {
   CaseSensitive,
   Check,
   Download,
-  Sparkles,
+  PencilSparkles,
   Type,
   Zap,
 } from "lucide-react";
@@ -16,7 +16,7 @@ import { CloseIcon } from "./Icons";
 
 // Tools shown in the toolbar. Add "decor", "effect" or "burst" to bring them back;
 // their buttons and panels are still wired up below.
-const ENABLED_TOOLS = ["letter", "font", "gradient", "download"];
+const ENABLED_TOOLS = ["letter", "font", "decor", "gradient", "download"];
 const ICON_PROPS = { size: 18, strokeWidth: 1.8, "aria-hidden": true };
 
 // Renders a burst sticker's shapes with the same data the canvas uses
@@ -148,7 +148,7 @@ export default function Controls({
             active={panel === "decor"}
             onClick={() => toggle("decor")}
           >
-            <Sparkles {...ICON_PROPS} />
+            <PencilSparkles {...ICON_PROPS} />
           </ToolButton>
         )}
         {on("effect") && (
